@@ -115,7 +115,7 @@ services:
     image: obsidiandynamics/kafdrop
     restart: "no"
     environment:
-      KAFKA_BROKERCONNECT: "kafka-1:29092,kafka-2:29092,kafka-3:39092"
+      KAFKA_BROKERCONNECT: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
       JVM_OPTS: "-Xms16M -Xmx512M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
     ports:
       - 9000:9000
