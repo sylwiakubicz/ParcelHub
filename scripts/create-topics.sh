@@ -1,7 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
 echo "⏳ Czekam na uruchomienie brokera..."
 sleep 10  # poczekaj, aż Kafka wystartuje
 
-BOOTSTRAP="kafka-1:9092"   # lub: localhost:19092
+BOOTSTRAP="${BOOTSTRAP:-kafka-1:9092}"   # lub: localhost:19092
 
 create_topic() {
   local TOPIC="$1"
