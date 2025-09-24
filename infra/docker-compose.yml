@@ -108,7 +108,7 @@ services:
       - ../scripts:/scripts:ro
     environment:
       - BOOTSTRAP=kafka-1:9092
-    entrypoint: ["bash", "-lc", "./create-topics.sh"]
+    entrypoint: ["bash", "-lc", "./scripts/create-topics.sh"]
 
 volumes:
   kafka1-data:
