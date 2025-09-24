@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    container_name: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d shipment" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    environment:
+      POSTGRES_DB: shipment
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../scripts/sql:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  pgdata:
+
+secrets:
+  db_password:
+    file: ../../secrets/postgres_password.txt
