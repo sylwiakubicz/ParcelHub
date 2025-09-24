@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+export PATH="/opt/bitnami/kafka/bin:$PATH"
 
 echo "⏳ Czekam na uruchomienie brokera..."
 sleep 10  # poczekaj, aż Kafka wystartuje
