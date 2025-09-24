@@ -105,7 +105,7 @@ services:
       kafka-3:
         condition: service_healthy
     volumes:
-      - ./scripts:/scripts:ro
+      - ../scripts:/scripts:ro
     environment:
       - BOOTSTRAP=kafka-1:9092
     entrypoint: ["bash", "-lc", "chmod +x /scripts/create-topics.sh && /scripts/create-topics.sh"]
