@@ -104,7 +104,6 @@ services:
         condition: service_healthy
       kafka-3:
         condition: service_healthy
-    networks: [parcelhub]
     volumes:
       - ../scripts:/scripts:ro
     environment:
