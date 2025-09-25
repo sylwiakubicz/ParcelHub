@@ -58,5 +58,5 @@ END$$;
 
 CREATE INDEX IF NOT EXISTS idx_shipment_status ON shipment.shipment(status);
 CREATE INDEX IF NOT EXISTS idx_shipment_dest_locker ON shipment.shipment(destination_locker_id);
-CREATE INDEX IF NOT EXISTS idx_outbox_createdat ON shipment.outbox_event(createdat);
-CREATE INDEX IF NOT EXISTS idx_outbox_aggr ON shipment.outbox_event(aggregatetype, aggregateid);
+CREATE INDEX IF NOT EXISTS idx_outbox_createdat ON shipment.outbox_event(created_at);
+CREATE INDEX IF NOT EXISTS idx_outbox_aggr ON shipment.outbox_event(aggregate_type, aggregate_id);
