@@ -27,6 +27,7 @@ services:
       timeout: 10s
       retries: 10
       start_period: 15s
+    networks: [parcelhub]
     volumes:
       - kafka1-data:/bitnami/kafka
 
@@ -57,6 +58,7 @@ services:
       timeout: 10s
       retries: 10
       start_period: 15s
+    networks: [parcelhub]
     volumes:
       - kafka2-data:/bitnami/kafka
     depends_on:
@@ -89,6 +91,7 @@ services:
       timeout: 10s
       retries: 10
       start_period: 15s
+    networks: [parcelhub]
     volumes:
       - kafka3-data:/bitnami/kafka
     depends_on:
@@ -104,6 +107,7 @@ services:
         condition: service_healthy
       kafka-3:
         condition: service_healthy
+    networks: [parcelhub]
     volumes:
       - ../scripts:/scripts:ro
     environment:
@@ -119,6 +123,7 @@ services:
       JVM_OPTS: "-Xms16M -Xmx512M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
       SPRINGDOC_API_DOCS_ENABLED: "false"
       SPRINGDOC_SWAGGER_UI_ENABLED: "false"
+    networks: [parcelhub]
     ports:
       - 9000:9000
     depends_on:
@@ -133,3 +138,7 @@ volumes:
   kafka1-data:
   kafka2-data:
   kafka3-data:
+
+networks:
+  parcelhub:
+    external: true
