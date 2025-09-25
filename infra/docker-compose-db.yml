@@ -15,7 +15,6 @@ services:
       POSTGRES_DB: shipment
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
-    networks: [parcelhub]
     command: [
       "postgres",
       "-c", "wal_level=logical",
@@ -43,7 +42,6 @@ services:
       VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       KEY_CONVERTER_SCHEMAS_ENABLE: "true"
       VALUE_CONVERTER_SCHEMAS_ENABLE: "true"
-    networks: [parcelhub]
     depends_on:
       kafka-1:
         condition: service_healthy
@@ -66,7 +64,3 @@ volumes:
 secrets:
   db_password:
     file: ../../secrets/postgres_password.txt
-
-networks:
-  parcelhub:
-    external: true
