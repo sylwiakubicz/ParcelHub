@@ -26,6 +26,16 @@ CREATE TABLE IF NOT EXISTS shipment.shipment (
     client_request_id UUID UNIQUE
     );
 
+CREATE TABLE IF NOT EXISTS shipment.outbox_event (
+    id             UUID PRIMARY KEY,
+    aggregate_id    UUID NOT NULL,
+    aggregate_type  TEXT NOT NULL,
+    event_type      TEXT NOT NULL,
+    payload        JSONB NOT NULL,
+    headers        JSONB,
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+
 
 CREATE OR REPLACE FUNCTION shipment.set_updated_at()
 RETURNS TRIGGER AS $$
@@ -48,3 +58,5 @@ END$$;
 
 CREATE INDEX IF NOT EXISTS idx_shipment_status ON shipment.shipment(status);
 CREATE INDEX IF NOT EXISTS idx_shipment_dest_locker ON shipment.shipment(destination_locker_id);
+CREATE INDEX IF NOT EXISTS idx_outbox_createdat ON shipment.outbox_event(createdat);
+CREATE INDEX IF NOT EXISTS idx_outbox_aggr ON shipment.outbox_event(aggregatetype, aggregateid);
