@@ -19,7 +19,7 @@ curl -X POST http://localhost:8083/connectors \
     "transforms.outbox.table.field.event.key": "aggregate_id",
     "transforms.outbox.table.field.payload": "payload",
     "transforms.outbox.table.field.timestamp": "created_at",
-    "transforms.outbox.table.fields.additional.placement": "eventType:header,headers:headers",
+    "transforms.outbox.table.fields.additional.placement": "event_type:header,headers:headers",
 
     "snapshot.mode": "initial",
 
