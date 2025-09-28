@@ -2,6 +2,7 @@ package com.parcelHub.shipment_api.mapper;
 
 import com.parcelHub.shipment_api.dto.CreateShipmentRequestDto;
 import com.parcelHub.shipment_api.dto.CreateShipmentResponseDto;
+import com.parcelHub.shipment_api.dto.InitiateReturnResponseDto;
 import com.parcelHub.shipment_api.dto.LabelResponseDto;
 import com.parcelHub.shipment_api.model.Shipment;
 import org.springframework.stereotype.Component;
@@ -38,6 +39,12 @@ public class ShipmentMapper {
             shipment.setClientRequestId(createShipmentRequestDto.getClientRequestId());
         }
         return shipment;
+    }
+
+    public InitiateReturnResponseDto mapShipmentToInitiateReturnResponseDto(Shipment shipment) {
+        InitiateReturnResponseDto initiateReturnResponseDto = new InitiateReturnResponseDto();
+        initiateReturnResponseDto.setShipmentId(shipment.getId());
+        return initiateReturnResponseDto;
     }
 
     private String trimToNull(String v) {
