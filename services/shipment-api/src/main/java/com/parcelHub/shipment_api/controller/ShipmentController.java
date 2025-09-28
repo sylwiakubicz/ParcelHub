@@ -1,8 +1,6 @@
 package com.parcelHub.shipment_api.controller;
 
-import com.parcelHub.shipment_api.dto.CreateShipmentRequestDto;
-import com.parcelHub.shipment_api.dto.CreateShipmentResponseDto;
-import com.parcelHub.shipment_api.dto.LabelResponseDto;
+import com.parcelHub.shipment_api.dto.*;
 import com.parcelHub.shipment_api.service.ShipmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +28,14 @@ public class ShipmentController {
             @Valid @RequestBody CreateShipmentRequestDto createShipmentRequestDto) {
         CreateShipmentResponseDto createShipmentResponseDto = shipmentService.createShipment(createShipmentRequestDto);
         return ResponseEntity.ok(createShipmentResponseDto);
+    }
+
+    @PostMapping("/{shipmentId}/returns")
+    public ResponseEntity<InitiateReturnResponseDto> initiateReturn(
+            @PathVariable UUID shipmentId,
+            @Valid @RequestBody InitiateReturnRequestDto initiateReturnRequestDto) {
+        InitiateReturnResponseDto initiateReturnResponseDto =
+                shipmentService.initiateReturn(shipmentId, initiateReturnRequestDto);
+        return ResponseEntity.ok(initiateReturnResponseDto);
     }
 }
