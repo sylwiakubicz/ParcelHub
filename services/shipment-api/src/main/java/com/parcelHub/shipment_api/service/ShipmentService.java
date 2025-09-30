@@ -75,7 +75,9 @@ public class ShipmentService {
         return shipmentMapper.mapShipmentToCreateShipmentResponseDto(shipment);
    }
 
-   public InitiateReturnResponseDto initiateReturn(UUID shipmentId, InitiateReturnRequestDto initiateReturnRequestDto) {
+   @Transactional
+   public InitiateReturnResponseDto initiateReturn(UUID shipmentId, InitiateReturnRequestDto initiateReturnRequestDto,
+                                                   String traceId, String correlationId) {
        Shipment shipment = shipmentRepository.findById(shipmentId).orElseThrow(
                () -> new ShipmentNotFoundException("Shipment with id: '" + shipmentId + "' not found")
        );
@@ -84,10 +86,11 @@ public class ShipmentService {
 
        shipmentRepository.save(shipment);
 
-       // TODO: zapis na baze eventoutbox
+       traceId = (traceId == null || traceId.isBlank()) ? UUID.randomUUID().toString() : traceId;
+       correlationId = (correlationId == null || correlationId.isBlank()) ? UUID.randomUUID().toString() : correlationId;
+       outboxEventRepository.save(outboxEventFactory.initiateReturnOutboxEvent(initiateReturnRequestDto, traceId, correlationId, shipmentId));
 
        return shipmentMapper.mapShipmentToInitiateReturnResponseDto(shipment);
-
    }
 
     private Long nextLabelSeq() {
