@@ -17,4 +17,12 @@ public class LabelResponseDto {
     public void setLabelUrl(String labelUrl) {
         this.labelUrl = labelUrl;
     }
+
+    public String getLabelNumber() {
+        return labelNumber;
+    }
+
+    public String getLabelUrl() {
+        return labelUrl;
+    }
 }
