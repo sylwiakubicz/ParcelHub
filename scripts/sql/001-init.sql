@@ -60,3 +60,8 @@ CREATE INDEX IF NOT EXISTS idx_shipment_status ON shipment.shipment(status);
 CREATE INDEX IF NOT EXISTS idx_shipment_dest_locker ON shipment.shipment(destination_locker_id);
 CREATE INDEX IF NOT EXISTS idx_outbox_createdat ON shipment.outbox_event(created_at);
 CREATE INDEX IF NOT EXISTS idx_outbox_aggr ON shipment.outbox_event(aggregate_type, aggregate_id);
+
+CREATE SEQUENCE IF NOT EXISTS shipment.label_number_seq;
+
+ALTER TABLE shipment.shipment
+    ADD CONSTRAINT uk_label_number UNIQUE (label_number);
