@@ -2,6 +2,8 @@ package com.parcelHub.shipment_api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.parcelHub.shipment_api.dto.InitiateReturnRequestDto;
+import com.parcelHub.shipment_api.dto.OutboxInitiateReturnPayloadDto;
 import com.parcelHub.shipment_api.dto.OutboxPayloadDto;
 import com.parcelHub.shipment_api.mapper.OutboxEventMapper;
 import com.parcelHub.shipment_api.model.OutboxEvent;
@@ -30,17 +32,43 @@ public class OutboxEventFactory {
         outboxEvent.setAggregateType(AGGREGATE_TYPE);
         outboxEvent.setAggregateId(shipment.getId());
 
-        OutboxPayloadDto outboxPayloadDto = outboxEventMapper.mapShipmentToOutboxPayloadDto(shipment);
+        OutboxPayloadDto outboxPayloadDto = outboxEventMapper.mapShipmentToOutboxPayloadDto(shipment, shipment.getId());
         ObjectNode payload = objectMapper.valueToTree(outboxPayloadDto);
         outboxEvent.setPayload(payload);
 
-        ObjectNode headers = objectMapper.createObjectNode();
-        headers.put("traceId", traceId);
-        headers.put("correlationId", correlationId);
-        headers.put("schemaVersion", SCHEMA_VERSION);
-        headers.put("source", SOURCE);
-        outboxEvent.setHeaders(headers);
+        outboxEvent.setHeaders(createObjectNode(traceId, correlationId));
 
         return outboxEvent;
+    }
+
+    public OutboxEvent initiateReturnOutboxEvent(InitiateReturnRequestDto initiateReturnRequestDto,
+                                                 String traceId, String correlationId, UUID shipmentId) {
+
+        OutboxEvent outboxEvent = new OutboxEvent();
+        outboxEvent.setId(UUID.randomUUID());
+        outboxEvent.setEventType("ReturnInitiated");
+        outboxEvent.setAggregateType(AGGREGATE_TYPE);
+        outboxEvent.setAggregateId(shipmentId);
+
+        OutboxInitiateReturnPayloadDto outboxInitiateReturnPayloadDto =
+                outboxEventMapper.mapRequestToOutboxInitiateReturnPayloadDto(initiateReturnRequestDto,
+                        shipmentId, outboxEvent.getId());
+
+        ObjectNode payload = objectMapper.valueToTree(outboxInitiateReturnPayloadDto);
+        outboxEvent.setPayload(payload);
+
+        outboxEvent.setHeaders(createObjectNode(traceId, correlationId));
+
+        return outboxEvent;
+    }
+
+
+    private ObjectNode createObjectNode(String traceId, String correlationId) {
+        ObjectNode headers = objectMapper.createObjectNode();
+        headers.put("traceId", String.valueOf(traceId));
+        headers.put("correlationId", String.valueOf(correlationId));
+        headers.put("schemaVersion", SCHEMA_VERSION);
+        headers.put("source", SOURCE);
+        return headers;
     }
 }
