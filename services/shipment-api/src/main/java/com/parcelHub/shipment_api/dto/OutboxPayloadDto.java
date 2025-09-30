@@ -9,6 +9,7 @@ public class OutboxPayloadDto {
     private PersonDto sender;
     private PersonDto recipient;
     private String destinationLockerId;
+    private UUID eventId;
 
     public OutboxPayloadDto() {
     }
@@ -51,6 +52,14 @@ public class OutboxPayloadDto {
 
     public void setDestinationLockerId(String destinationLockerId) {
         this.destinationLockerId = destinationLockerId;
+    }
+
+    public UUID getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(UUID eventId) {
+        this.eventId = eventId;
     }
 }
 
