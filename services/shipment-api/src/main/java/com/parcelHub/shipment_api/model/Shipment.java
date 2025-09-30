@@ -1,6 +1,8 @@
 package com.parcelHub.shipment_api.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -25,6 +27,7 @@ public class Shipment {
     private Instant updatedAt;
 
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     @Column(name = "status", nullable = false)
     private ShipmentStatus status;
 
