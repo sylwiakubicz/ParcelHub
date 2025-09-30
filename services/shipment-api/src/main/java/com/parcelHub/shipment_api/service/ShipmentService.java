@@ -82,6 +82,10 @@ public class ShipmentService {
                () -> new ShipmentNotFoundException("Shipment with id: '" + shipmentId + "' not found")
        );
 
+       if (shipment.getStatus() == ShipmentStatus.RETURN_INITIATED) {
+           return shipmentMapper.mapShipmentToInitiateReturnResponseDto(shipment);
+       }
+
        shipment.setStatus(ShipmentStatus.RETURN_INITIATED);
 
        shipmentRepository.save(shipment);
