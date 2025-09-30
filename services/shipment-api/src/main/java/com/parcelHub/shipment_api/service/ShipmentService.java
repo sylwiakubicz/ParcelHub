@@ -5,6 +5,7 @@ import com.parcelHub.shipment_api.exception.ShipmentNotFoundException;
 import com.parcelHub.shipment_api.mapper.ShipmentMapper;
 import com.parcelHub.shipment_api.model.Shipment;
 import com.parcelHub.shipment_api.model.ShipmentStatus;
+import com.parcelHub.shipment_api.repository.OutboxEventRepository;
 import com.parcelHub.shipment_api.repository.ShipmentRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -21,13 +22,18 @@ public class ShipmentService {
 
     private final ShipmentRepository shipmentRepository;
     private final ShipmentMapper shipmentMapper;
+    private final OutboxEventRepository outboxEventRepository;
+    private final OutboxEventFactory outboxEventFactory;
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    public ShipmentService(ShipmentRepository shipmentRepository, ShipmentMapper shipmentMapper) {
+    public ShipmentService(ShipmentRepository shipmentRepository, ShipmentMapper shipmentMapper,
+                           OutboxEventRepository outboxEventRepository, OutboxEventFactory outboxEventFactory) {
         this.shipmentRepository = shipmentRepository;
         this.shipmentMapper = shipmentMapper;
+        this.outboxEventRepository = outboxEventRepository;
+        this.outboxEventFactory = outboxEventFactory;
     }
 
    public LabelResponseDto getShipment(UUID shipmentId) {
@@ -38,10 +44,12 @@ public class ShipmentService {
    }
 
    @Transactional
-   public CreateShipmentResponseDto createShipment(CreateShipmentRequestDto requestDto) {
+   public CreateShipmentResponseDto createShipment(CreateShipmentRequestDto requestDto,
+                                                   String traceId, String correlationId) {
         Shipment shipment = shipmentMapper.mapCreateShipmentRequestDtoToShipment(requestDto);
         shipment.setStatus(ShipmentStatus.CREATED);
         shipment.setId(UUID.randomUUID());
+        shipment.setClientRequestId(requestDto.getClientRequestId());
 
         Long next = nextLabelSeq();
         String labelNumber = format(next);
@@ -60,7 +68,9 @@ public class ShipmentService {
             }
         }
 
-        // TODO: ZAPIS DO OUTBOXEVENT
+        traceId = (traceId == null || traceId.isBlank()) ? UUID.randomUUID().toString() : traceId;
+        correlationId = (correlationId == null || correlationId.isBlank()) ? UUID.randomUUID().toString() : correlationId;
+        outboxEventRepository.save(outboxEventFactory.createOutboxEvent(shipment, traceId, correlationId));
 
         return shipmentMapper.mapShipmentToCreateShipmentResponseDto(shipment);
    }

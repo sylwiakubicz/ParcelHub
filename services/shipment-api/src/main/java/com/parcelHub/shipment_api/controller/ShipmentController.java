@@ -3,6 +3,7 @@ package com.parcelHub.shipment_api.controller;
 import com.parcelHub.shipment_api.dto.*;
 import com.parcelHub.shipment_api.service.ShipmentService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +26,11 @@ public class ShipmentController {
 
     @PostMapping
     public ResponseEntity<CreateShipmentResponseDto> createShipment(
+            @RequestHeader(value = "X-Trace-Id", required = false) @Pattern(regexp = "") String traceId,
+            @RequestHeader(value = "X-Correlation-ID", required = false) @Pattern(regexp = "") String correlationId,
             @Valid @RequestBody CreateShipmentRequestDto createShipmentRequestDto) {
-        CreateShipmentResponseDto createShipmentResponseDto = shipmentService.createShipment(createShipmentRequestDto);
+        CreateShipmentResponseDto createShipmentResponseDto = shipmentService.createShipment(
+                createShipmentRequestDto, traceId, correlationId);
         return ResponseEntity.ok(createShipmentResponseDto);
     }
 
