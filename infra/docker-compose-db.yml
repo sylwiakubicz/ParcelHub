@@ -38,10 +38,16 @@ services:
       CONFIG_STORAGE_TOPIC: "connect-configs"
       OFFSET_STORAGE_TOPIC: "connect-offsets"
       STATUS_STORAGE_TOPIC: "connect-status"
-      KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      KEY_CONVERTER_SCHEMAS_ENABLE: "true"
-      VALUE_CONVERTER_SCHEMAS_ENABLE: "true"
+
+      KEY_CONVERTER: "io.apicurio.registry.utils.converter.AvroConverter"
+      VALUE_CONVERTER: "io.apicurio.registry.utils.converter.AvroConverter"
+
+      KEY_CONVERTER_APICURIO_REGISTRY_URL: "http://apicurio:8080/apis/registry/v2"
+      VALUE_CONVERTER_APICURIO_REGISTRY_URL: "http://apicurio:8080/apis/registry/v2"
+
+      KEY_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy"
+      VALUE_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy"
+
     depends_on:
       kafka-1:
         condition: service_healthy
@@ -57,6 +63,18 @@ services:
       timeout: 5s
       retries: 10
       start_period: 15s
+
+  apicurio:
+    image: apicurio/apicurio-registry-mem:2.5.10.Final
+    container_name: apicurio
+    ports:
+      - "8081:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/apis/registry/v2/ids/globalIds/1 || true"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
   pgdata:
