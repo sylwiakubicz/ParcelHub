@@ -3,10 +3,10 @@ services:
   shipment-api:
     image: parcelhub/shipment-api:0.1.0
     ports:
-     - "18080:18080"
+     - "8080:8080"
     container_name: shipment-api
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:18080" ]
+      test: [ "CMD-SHELL", "curl", "-fsS", "http://localhost:8080/actuator/health | grep '\"status\":\"UP\"'" ]
       interval: 10s
       timeout: 5s
       retries: 5
