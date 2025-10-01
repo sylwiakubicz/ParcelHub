@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  shipment-api:
+    image: parcelhub/shipment-api:0.1.0
+    ports:
+     - "18080:18080"
+    container_name: shipment-api
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:18080" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db:5432/shipment
+      SPRING_DATASOURCE_USERNAME: postgres
+    secrets:
+      - db_password
+
