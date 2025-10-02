@@ -1,0 +1,8 @@
+{
+  "type": "record",
+  "name": "ShipmentKey",
+  "namespace": "com.parcelhub.shipment",
+  "fields": [
+    { "name": "shipmentId", "type": { "type": "string", "logicalType": "uuid" } }
+  ]
+}
