@@ -28,7 +28,7 @@ services:
       - ../scripts/sql:/docker-entrypoint-initdb.d:ro
 
   debezium:
-    image: debezium/connect:2.6
+    image: sylwiakubicz/debezium_connect_v2.6_apicurio_v2.5.10:1.0.0
     container_name: debezium
     ports:
       - "8083:8083"
