@@ -39,15 +39,14 @@ services:
       OFFSET_STORAGE_TOPIC: "connect-offsets"
       STATUS_STORAGE_TOPIC: "connect-status"
 
-      KEY_CONVERTER: "io.apicurio.registry.utils.converter.AvroConverter"
-      VALUE_CONVERTER: "io.apicurio.registry.utils.converter.AvroConverter"
+      CONNECT_KEY_CONVERTER: "io.apicurio.registry.utils.converter.AvroConverter"
+      CONNECT_VALUE_CONVERTER: "io.apicurio.registry.utils.converter.AvroConverter"
 
-      KEY_CONVERTER_APICURIO_REGISTRY_URL: "http://apicurio:8080/apis/registry/v2"
-      VALUE_CONVERTER_APICURIO_REGISTRY_URL: "http://apicurio:8080/apis/registry/v2"
+      CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_URL: "http://apicurio:8080/apis/registry/v2"
+      CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_URL: "http://apicurio:8080/apis/registry/v2"
 
-      KEY_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy"
-      VALUE_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy"
-
+      CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy"
+      CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy"
     depends_on:
       kafka-1:
         condition: service_healthy
