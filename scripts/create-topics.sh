@@ -39,6 +39,8 @@ create_topic() {
 }
 
 create_topic shipment-events 12 3 delete 1209600000
+create_topic tracking-updates 12 3 delete 1209600000
+create_topic shipment-tracking 12 3 compact ""
 create_topic connect-configs 1 3 compact ""
 create_topic connect-offsets 12 3 compact ""
 create_topic connect-status 6 3 compact ""
