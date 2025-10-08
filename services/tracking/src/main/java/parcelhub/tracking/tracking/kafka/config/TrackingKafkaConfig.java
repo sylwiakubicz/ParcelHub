@@ -58,7 +58,7 @@ public class TrackingKafkaConfig {
 
         props.put(StreamsConfig.consumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "earliest");
 
-        props.put(CACHE_MAX_BYTES_BUFFERING_CONFIG, 104857600L); // ~100 MB
+        props.put(STATESTORE_CACHE_MAX_BYTES_CONFIG, 104857600L); // ~100 MB
         props.put(COMMIT_INTERVAL_MS_CONFIG, 200);
 
         props.put(NUM_STANDBY_REPLICAS_CONFIG, 1);
