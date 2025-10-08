@@ -19,7 +19,7 @@ import static org.springframework.kafka.annotation.KafkaStreamsDefaultConfigurat
 @EnableKafkaStreams
 public class TrackingKafkaConfig {
 
-//    Can be also provided from application.properties
+//    Can be also provided from application.properties if they are set there
 //    @Autowired KafkaProperties kp;
 //    Map<String, Object> props = kp.buildStreamsProperties();
 
@@ -34,6 +34,12 @@ public class TrackingKafkaConfig {
 
     @Value("${apicurio.url}")
     private String apicurioUrl;
+
+    @Value("${iq.host}")
+    private String iqHost;
+
+    @Value("${server.port}")
+    private String iqPort;
 
     @Bean(name = DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     public KafkaStreamsConfiguration kStreamsConfigs() {
@@ -59,6 +65,8 @@ public class TrackingKafkaConfig {
 
         props.put("apicurio.registry.url", apicurioUrl);
         props.put("apicurio.registry.find-latest", true);
+
+        props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, iqHost + ":" + iqPort);
 
         return new KafkaStreamsConfiguration(props);
     }
