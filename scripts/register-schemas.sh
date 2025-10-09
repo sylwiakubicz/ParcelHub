@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REGISTRY_URL=${http://localhost:8081/apis/registry/v2}
+REGISTRY_URL="http://localhost:8081/apis/registry/v2"
 GROUP=${GROUP:-shipment}
 CONTENT_TYPE="application/json"
 ARTIFACT_TYPE="AVRO"
