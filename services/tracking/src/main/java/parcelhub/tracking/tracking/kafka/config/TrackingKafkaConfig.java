@@ -65,6 +65,8 @@ public class TrackingKafkaConfig {
 
         props.put("apicurio.registry.url", apicurioUrl);
         props.put("apicurio.registry.find-latest", true);
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, io.apicurio.registry.serde.avro.AvroSerde.class);
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, io.apicurio.registry.serde.avro.AvroSerde.class);
 
         props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, iqHost + ":" + iqPort);
 
