@@ -61,21 +61,21 @@ ensure_artifact() {
 
 declare -A SCHEMAS=(
   # shipment-events
-  ["shipment-events-ShipmentKey"]="schemas/avro/key/ShipmentKey.avsc"
-  ["shipment-events-ShipmentCreated"]="schemas/avro/shipment-events/ShipmentCreated.avsc"
-  ["shipment-events-ReturnInitiated"]="schemas/avro/shipment-events/ReturnInitiated.avsc"
+  ["shipment-events-ShipmentKey"]="../schemas/avro/key/ShipmentKey.avsc"
+  ["shipment-events-ShipmentCreated"]="../schemas/avro/shipment-events/ShipmentCreated.avsc"
+  ["shipment-events-ReturnInitiated"]="../schemas/avro/shipment-events/ReturnInitiated.avsc"
 
   # shipment-tracking
-  ["shipment-tracking-ShipmentKey"]="schemas/avro/key/ShipmentKey.avsc"
-  ["shipment-tracking-ShipmentTrackingState"]="schemas/avro/shipment-tracking/ShipmentTrackingState.avsc"
+  ["shipment-tracking-ShipmentKey"]="../schemas/avro/key/ShipmentKey.avsc"
+  ["shipment-tracking-ShipmentTrackingState"]="../schemas/avro/shipment-tracking/ShipmentTrackingState.avsc"
 
   # tracking-updates
-  ["tracking-updates-ShipmentKey"]="schemas/avro/key/ShipmentKey.avsc"
-  ["tracking-updates-TrackingUpdated"]="schemas/avro/tracking-updates/TrackingUpdated.avsc"
+  ["tracking-updates-ShipmentKey"]="../schemas/avro/key/ShipmentKey.avsc"
+  ["tracking-updates-TrackingUpdated"]="../schemas/avro/tracking-updates/TrackingUpdated.avsc"
 
   # changelog (internal KTable)
-  ["parcelhub-tracking-service-tracking-state-changelog-ShipmentKey"]="schemas/avro/key/ShipmentKey.avsc"
-  ["parcelhub-tracking-service-tracking-state-changelog-ShipmentTrackingState"]="schemas/avro/shipment-tracking/ShipmentTrackingState.avsc"
+  ["parcelhub-tracking-service-tracking-state-changelog-ShipmentKey"]="../schemas/avro/key/ShipmentKey.avsc"
+  ["parcelhub-tracking-service-tracking-state-changelog-ShipmentTrackingState"]="../schemas/avro/shipment-tracking/ShipmentTrackingState.avsc"
 )
 
 
