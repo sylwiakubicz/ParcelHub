@@ -47,6 +47,9 @@ services:
 
       CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy"
       CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy"
+
+      CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_USE_HEADERS: "true"
+      CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_USE_HEADERS: "true"
     depends_on:
       kafka-1:
         condition: service_healthy

@@ -27,6 +27,7 @@ curl -sS -X POST http://localhost:8083/connectors \
       "transforms.outbox.table.field.payload": "payload",
       "transforms.outbox.table.field.timestamp": "created_at",
       "transforms.outbox.table.fields.additional.placement": "event_type:header",
+      "transforms.outbox.table.expand.json.payload": "true"
 
       "snapshot.mode": "initial"
     }
