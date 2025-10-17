@@ -21,3 +21,7 @@ networks:
   default:
     external: true
     name: parcelhub_network
+
+secrets:
+  db_password:
+    file: ../../secrets/postgres_password.txt
