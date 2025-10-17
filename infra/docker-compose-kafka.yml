@@ -133,3 +133,9 @@ volumes:
   kafka1-data:
   kafka2-data:
   kafka3-data:
+
+
+networks:
+  default:
+    external: true
+    name: parcelhub_network
