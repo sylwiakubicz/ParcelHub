@@ -11,9 +11,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    depends_on:
-      postgres_db:
-        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db:5432/shipment
       SPRING_DATASOURCE_USERNAME: postgres
