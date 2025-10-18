@@ -48,8 +48,8 @@ services:
       CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicIdStrategy"
       CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy"
 
-      CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_USE_HEADERS: "true"
-      CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_USE_HEADERS: "true"
+      CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_USE_HEADERS: "false"
+      CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_USE_HEADERS: "false"
     depends_on:
       postgres_db:
         condition: service_healthy

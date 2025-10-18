@@ -56,7 +56,8 @@ public class TrackingKafkaConfig {
         props.put(StreamsConfig.producerPrefix(ProducerConfig.ACKS_CONFIG), "all");
         props.put(StreamsConfig.producerPrefix(ProducerConfig.COMPRESSION_TYPE_CONFIG), "lz4");
 
-        props.put(StreamsConfig.consumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "earliest");
+//        props.put(StreamsConfig.consumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "earliest");
+        props.put(StreamsConfig.consumerPrefix(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "latest");
 
         props.put(STATESTORE_CACHE_MAX_BYTES_CONFIG, 104857600L); // ~100 MB
         props.put(COMMIT_INTERVAL_MS_CONFIG, 200);
@@ -65,7 +66,8 @@ public class TrackingKafkaConfig {
 
         props.put("apicurio.registry.url", apicurioUrl);
         props.put("apicurio.registry.find-latest", true);
-        props.put("apicurio.registry.use-specific-avro", true);
+        props.put("apicurio.registry.use-specific-avro", false);
+        props.put("apicurio.registry.use.headers", false);
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, io.apicurio.registry.serde.avro.AvroSerde.class);
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, io.apicurio.registry.serde.avro.AvroSerde.class);
 
