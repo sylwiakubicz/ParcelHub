@@ -45,15 +45,12 @@ services:
       CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_URL: "http://apicurio:8080/apis/registry/v2"
       CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_URL: "http://apicurio:8080/apis/registry/v2"
 
-      CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy"
+      CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicIdStrategy"
       CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy"
+
+      CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_USE_HEADERS: "false"
+      CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_USE_HEADERS: "false"
     depends_on:
-      kafka-1:
-        condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-      kafka-3:
-        condition: service_healthy
       postgres_db:
         condition: service_healthy
     healthcheck:
@@ -81,3 +78,8 @@ volumes:
 secrets:
   db_password:
     file: ../../secrets/postgres_password.txt
+
+networks:
+  default:
+    external: true
+    name: parcelhub_network
