@@ -39,16 +39,13 @@ services:
       OFFSET_STORAGE_TOPIC: "connect-offsets"
       STATUS_STORAGE_TOPIC: "connect-status"
 
-      CONNECT_KEY_CONVERTER: "io.apicurio.registry.utils.converter.AvroConverter"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
       CONNECT_VALUE_CONVERTER: "io.apicurio.registry.utils.converter.AvroConverter"
 
-      CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_URL: "http://apicurio:8080/apis/registry/v2"
       CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_URL: "http://apicurio:8080/apis/registry/v2"
 
-      CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicIdStrategy"
       CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy"
 
-      CONNECT_KEY_CONVERTER_APICURIO_REGISTRY_USE_HEADERS: "false"
       CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_USE_HEADERS: "false"
     depends_on:
       postgres_db:
