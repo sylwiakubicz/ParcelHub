@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>parcelhub</groupId>
-	<artifactId>tracking</artifactId>
+	<artifactId>tracking-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>tracking</name>
+	<name>tracking-service</name>
 	<description>Tracking service</description>
 	<url/>
 	<licenses>
