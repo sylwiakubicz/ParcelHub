@@ -33,7 +33,14 @@ curl -sS -X PUT http://localhost:8083/connectors/pg-outbox/config \
 
     "value.converter": "io.apicurio.registry.utils.converter.AvroConverter",
     "value.converter.apicurio.registry.url": "http://apicurio:8080/apis/registry/v2",
+
+    /* <<< KLUCZE STRATEGII – USTAW OBA >>> */
     "value.converter.apicurio.registry.artifact.strategy": "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy",
+    "value.converter.apicurio.registry.artifact.resolver.strategy": "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy",
+
     "value.converter.apicurio.registry.artifact.group-id": "shipment",
-    "value.converter.apicurio.registry.use.headers": "true"
+    "value.converter.apicurio.registry.use.headers": "true",
+
+    /* na DEV warto włączyć auto-register */
+    "value.converter.apicurio.registry.auto-register": "true"
   }'
