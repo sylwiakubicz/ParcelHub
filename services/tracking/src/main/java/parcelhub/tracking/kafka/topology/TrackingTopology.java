@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import parcelhub.tracking.kafka.config.TopicConfig;
 
 import java.util.Map;
 
@@ -19,11 +20,14 @@ import java.util.Map;
 public class TrackingTopology {
     private static final Logger log = LoggerFactory.getLogger(TrackingTopology.class);
 
-    @Value("${topics.shipment-events}")
-    private String shipmentEventsTopic;
+    private final TopicConfig topicConfig;
 
     @Value("${apicurio.url}")
     private String apicurioUrl;
+
+    public TrackingTopology(TopicConfig topicConfig) {
+        this.topicConfig = topicConfig;
+    }
 
     @Bean
     public KStream<String, GenericRecord> smokeStream(StreamsBuilder builder) {
@@ -37,13 +41,13 @@ public class TrackingTopology {
         ), false);
 
         KStream<String, GenericRecord> stream =
-                builder.stream(shipmentEventsTopic, Consumed.with(keySerde, valueSerde));
+                builder.stream(topicConfig.getShipmentEvents(), Consumed.with(keySerde, valueSerde));
 
         stream.peek((key, value) -> {
             String schema = (value != null && value.getSchema() != null)
                     ? value.getSchema().getFullName()
                     : "null";
-            log.info("IN: topic={}, key={}, valueSchema={}", shipmentEventsTopic, key, schema);
+            log.info("IN: topic={}, key={}, valueSchema={}", topicConfig.getShipmentEvents(), key, schema);
         });
 
         return stream;
