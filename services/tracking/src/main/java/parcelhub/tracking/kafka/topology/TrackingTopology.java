@@ -43,12 +43,45 @@ public class TrackingTopology {
         KStream<String, GenericRecord> stream =
                 builder.stream(topicConfig.getShipmentEvents(), Consumed.with(keySerde, valueSerde));
 
-        stream.peek((key, value) -> {
-            String schema = (value != null && value.getSchema() != null)
-                    ? value.getSchema().getFullName()
-                    : "null";
-            log.info("IN: topic={}, key={}, valueSchema={}", topicConfig.getShipmentEvents(), key, schema);
-        });
+        builder.stream(topicConfig.getShipmentEvents(), Consumed.with(keySerde, valueSerde))
+                .process(() -> new org.apache.kafka.streams.processor.api.Processor<String, GenericRecord, Void, Void>() {
+
+                    private org.apache.kafka.streams.processor.api.ProcessorContext<Void, Void> context;
+
+                    @Override
+                    public void init(org.apache.kafka.streams.processor.api.ProcessorContext<Void, Void> context) {
+                        this.context = context;
+                    }
+
+                    @Override
+                    public void process(org.apache.kafka.streams.processor.api.Record<String, GenericRecord> record) {
+                        // 1) event_type z nagłówka
+                        String eventType = "UNKNOWN";
+                        var h = record.headers().lastHeader("event_type");
+                        if (h != null && h.value() != null) {
+                            eventType = new String(h.value(), java.nio.charset.StandardCharsets.UTF_8);
+                        }
+
+                        // 2) shipmentId / destinationLockerId z Avro GenericRecord
+                        String shipmentId = null;
+                        String destLocker = null;
+
+                        if (record.value() != null) {
+                            Object sid = record.value().get("shipmentId");
+                            if (sid instanceof CharSequence cs) shipmentId = cs.toString();
+
+                            Object dli = record.value().get("destinationLockerId");
+                            if (dli instanceof CharSequence cs) destLocker = cs.toString();
+                        }
+
+                        long ts = record.timestamp(); // timestamp rekordu z Kafki
+
+                        log.info(
+                                "TRACK-IN eventType={}, key={}, shipmentId={}, destinationLockerId={}, ts={}",
+                                eventType, record.key(), shipmentId, destLocker, ts
+                        );
+                    }
+                });
 
         return stream;
     }
