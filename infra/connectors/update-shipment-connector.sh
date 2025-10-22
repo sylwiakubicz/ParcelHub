@@ -7,6 +7,7 @@ curl -sS -X PUT http://localhost:8083/connectors/pg-outbox/config \
     "database.user": "postgres",
     "database.password": "TU_HASLO",
     "database.dbname": "shipment",
+    "topic.prefix": "server1",
 
     "schema.include.list": "shipment",
     "table.include.list": "shipment.outbox_event",
