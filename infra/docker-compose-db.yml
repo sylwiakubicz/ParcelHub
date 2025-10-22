@@ -59,7 +59,7 @@ services:
       start_period: 15s
 
   apicurio:
-    image: apicurio/apicurio-registry-mem:3.1.0
+    image: apicurio/apicurio-registry-mem:3.1.0.Final
     container_name: apicurio
     ports:
       - "8081:8080"
