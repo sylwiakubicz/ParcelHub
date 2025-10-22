@@ -51,7 +51,7 @@ curl -sS -X POST http://localhost:8083/connectors \
           "value.converter.apicurio.registry.url": "http://apicurio:8080/apis/registry/v2",
 
           "value.converter.apicurio.registry.converter.serializer": "io.apicurio.registry.serde.avro.AvroKafkaSerializer"
-          "value.converter.apicurio.registry.artifact-resolver-strategy": "io.apicurio.registry.serde.strategy.RecordIdStrategy",
+          "value.converter.apicurio.registry.artifact-resolver-strategy": "io.apicurio.registry.serde.avro.strategy.RecordIdStrategy",
           "value.converter.apicurio.registry.artifact.artifact-id": "io.apicurio.registry.serde.strategy.RecordIdStrategy",
 
           "value.converter.apicurio.registry.artifact.group-id": "shipment",
