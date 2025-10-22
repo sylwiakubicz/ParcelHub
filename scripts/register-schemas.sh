@@ -61,17 +61,14 @@ ensure_artifact() {
 
 declare -A SCHEMAS=(
   # shipment-events
-  ["shipment-events-com.parcelhub.shipment.ShipmentCreated"]="../schemas/avro/shipment-events/ShipmentCreated.avsc"
-  ["shipment-events-com.parcelhub.shipment.ReturnInitiated"]="../schemas/avro/shipment-events/ReturnInitiated.avsc"
+  ["com.parcelhub.shipment.ShipmentCreated"]="../schemas/avro/shipment-events/ShipmentCreated.avsc"
+  ["com.parcelhub.shipment.ReturnInitiated"]="../schemas/avro/shipment-events/ReturnInitiated.avsc"
 
   # shipment-tracking
-  ["shipment-tracking-com.parcelhub.tracking.ShipmentTrackingState"]="../schemas/avro/shipment-tracking/ShipmentTrackingState.avsc"
+  ["com.parcelhub.tracking.ShipmentTrackingState"]="../schemas/avro/shipment-tracking/ShipmentTrackingState.avsc"
 
   # tracking-updates
-  ["tracking-updates-com.parcelhub.tracking.TrackingUpdated"]="../schemas/avro/tracking-updates/TrackingUpdated.avsc"
-
-  # changelog (internal KTable)
-  ["parcelhub-tracking-service-tracking-state-changelog-com.parcelhub.tracking.ShipmentTrackingState"]="../schemas/avro/shipment-tracking/ShipmentTrackingState.avsc"
+    ["com.parcelhub.tracking.TrackingUpdated"]="../schemas/avro/tracking-updates/TrackingUpdated.avsc"
 )
 
 
