@@ -28,7 +28,7 @@ services:
       - ../scripts/sql:/docker-entrypoint-initdb.d:ro
 
   debezium:
-    image: sylwiakubicz/debezium-connect-apicurio:2.6-3.1.0
+    image: sylwiakubicz/debezium_connect_v2.6_apicurio_v2.5.10:1.0.0
     container_name: debezium
     ports:
       - "8083:8083"
@@ -42,9 +42,9 @@ services:
       CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
       CONNECT_VALUE_CONVERTER: "io.apicurio.registry.utils.converter.AvroConverter"
 
-      CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_URL: "http://apicurio:8080/apis/registry/v3"
+      CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_URL: "http://apicurio:8080/apis/registry/v2"
 
-      CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_ARTIFACT_RESOLVER_STRATEGY: "io.apicurio.registry.serde.avro.strategy.RecordIdStrategy"
+      CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_ARTIFACT_STRATEGY: "io.apicurio.registry.utils.serde.strategy.RecordIdStrategy"
       CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_ARTIFACT_GROUP_ID: "shipment"
       CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_USE_HEADERS: "true"
       CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_USE_ID: "globalId"
@@ -59,7 +59,7 @@ services:
       start_period: 15s
 
   apicurio:
-    image: apicurio/apicurio-registry-mem:3.1.0.Final
+    image: apicurio/apicurio-registry-mem:2.5.10.Final
     container_name: apicurio
     ports:
       - "8081:8080"
