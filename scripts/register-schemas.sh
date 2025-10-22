@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REGISTRY_URL="http://localhost:8081/apis/registry/v2"
+REGISTRY_URL="http://localhost:8081/apis/registry/v3"
 GROUP=${GROUP:-shipment}
 CONTENT_TYPE="application/json"
 ARTIFACT_TYPE="AVRO"
@@ -17,8 +17,7 @@ exists_artifact() {
 }
 
 create_artifact() {
-  local artifact_id="$1"
-  local file_path="$2"
+  local artifact_id="$1"; local file_path="$2"
   echo "➕ Creating artifact: ${artifact_id}  (from ${file_path})"
   curl -s -X POST \
     -H "Content-Type: ${CONTENT_TYPE}" \
@@ -29,8 +28,7 @@ create_artifact() {
 }
 
 new_version() {
-  local artifact_id="$1"
-  local file_path="$2"
+  local artifact_id="$1"; local file_path="$2"
   echo "🔁 Adding new version to: ${artifact_id}  (from ${file_path})"
   curl -s -X POST \
     -H "Content-Type: ${CONTENT_TYPE}" \
@@ -39,38 +37,27 @@ new_version() {
 }
 
 ensure_artifact() {
-  local artifact_id="$1"
-  local file_path="$2"
-
+  local artifact_id="$1"; local file_path="$2"
   if exists_artifact "${artifact_id}"; then
     case "${ON_EXISTING}" in
-      skip)
-        echo "✔ Exists, skipping: ${artifact_id}"
-        ;;
-      version)
-        new_version "${artifact_id}" "${file_path}"
-        ;;
-      *)
-        echo "Unknown ON_EXISTING='${ON_EXISTING}', use 'skip' or 'version'"; exit 1;;
+      skip)    echo "✔ Exists, skipping: ${artifact_id}";;
+      version) new_version "${artifact_id}" "${file_path}";;
+      *) echo "Unknown ON_EXISTING='${ON_EXISTING}', use 'skip' or 'version'"; exit 1;;
     esac
   else
     create_artifact "${artifact_id}" "${file_path}"
   fi
 }
 
-
 declare -A SCHEMAS=(
   # shipment-events
   ["com.parcelhub.shipment.ShipmentCreated"]="../schemas/avro/shipment-events/ShipmentCreated.avsc"
   ["com.parcelhub.shipment.ReturnInitiated"]="../schemas/avro/shipment-events/ReturnInitiated.avsc"
-
   # shipment-tracking
   ["com.parcelhub.tracking.ShipmentTrackingState"]="../schemas/avro/shipment-tracking/ShipmentTrackingState.avsc"
-
   # tracking-updates
-    ["com.parcelhub.tracking.TrackingUpdated"]="../schemas/avro/tracking-updates/TrackingUpdated.avsc"
+  ["com.parcelhub.tracking.TrackingUpdated"]="../schemas/avro/tracking-updates/TrackingUpdated.avsc"
 )
-
 
 echo "Apicurio Registry: ${REGISTRY_URL}"
 echo "Group:            ${GROUP}"

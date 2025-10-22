@@ -46,11 +46,9 @@ curl -sS -X PUT http://localhost:8083/connectors/pg-outbox/config \
 
     "key.converter": "org.apache.kafka.connect.storage.StringConverter",
     "value.converter": "io.apicurio.registry.utils.converter.AvroConverter",
-    "value.converter.apicurio.registry.url": "http://apicurio:8080/apis/registry/v2",
-    "value.converter.apicurio.registry.artifact.strategy": "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy",
-    "value.converter.apicurio.registry.artifact.resolver.strategy": "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy",
-    "value.converter.apicurio.registry.artifactId.strategy": "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy",
-    "value.converter.apicurio.registry.artifactResolverStrategy": "io.apicurio.registry.utils.serde.strategy.TopicRecordIdStrategy",
+    "value.converter.apicurio.registry.url": "http://apicurio:8080/apis/registry/v3",
+    "value.converter.apicurio.registry.artifact-resolver-strategy": "io.apicurio.registry.serde.avro.strategy.RecordIdStrategy",
+    "value.converter.apicurio.registry.artifactId.strategy": "io.apicurio.registry.serde.strategy.RecordIdStrategy",
     "value.converter.apicurio.registry.artifact.group-id": "shipment",
     "value.converter.apicurio.registry.use.headers": "true",
     "value.converter.apicurio.registry.use-id": "globalId"
