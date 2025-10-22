@@ -45,7 +45,7 @@ curl -sS -X PUT http://localhost:8083/connectors/pg-outbox/config \
           "transforms.toOneTopic.replacement": "shipment-events",
 
           "key.converter": "org.apache.kafka.connect.storage.StringConverter",
-          "value.converter": "io.apicurio.registry.utils.converter.SerdeBasedConverter",
+          "value.converter": "io.apicurio.registry.utils.converter.AvroConverter",
           "value.converter.apicurio.registry.url": "http://apicurio:8080/apis/registry/v2",
 
           "value.converter.apicurio.registry.converter.serializer": "io.apicurio.registry.serde.avro.AvroKafkaSerializer"
