@@ -51,12 +51,12 @@ ensure_artifact() {
 
 declare -A SCHEMAS=(
   # shipment-events
-  ["com.parcelhub.shipment.ShipmentCreated"]="../schemas/avro/shipment-events/ShipmentCreated.avsc"
-  ["com.parcelhub.shipment.ReturnInitiated"]="../schemas/avro/shipment-events/ReturnInitiated.avsc"
+  ["ShipmentCreated"]="../schemas/avro/shipment-events/ShipmentCreated.avsc"
+  ["ReturnInitiated"]="../schemas/avro/shipment-events/ReturnInitiated.avsc"
   # shipment-tracking
-  ["com.parcelhub.tracking.ShipmentTrackingState"]="../schemas/avro/shipment-tracking/ShipmentTrackingState.avsc"
+  ["ShipmentTrackingState"]="../schemas/avro/shipment-tracking/ShipmentTrackingState.avsc"
   # tracking-updates
-  ["com.parcelhub.tracking.TrackingUpdated"]="../schemas/avro/tracking-updates/TrackingUpdated.avsc"
+  ["TrackingUpdated"]="../schemas/avro/tracking-updates/TrackingUpdated.avsc"
 )
 
 echo "Apicurio Registry: ${REGISTRY_URL}"
