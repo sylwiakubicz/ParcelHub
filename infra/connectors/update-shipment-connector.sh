@@ -51,6 +51,7 @@ curl -sS -X PUT http://localhost:8083/connectors/pg-outbox/config \
           "value.converter.apicurio.registry.converter.serializer": "io.apicurio.registry.serde.avro.AvroKafkaSerializer",
           "value.converter.apicurio.registry.artifact-resolver-strategy": "io.apicurio.registry.serde.avro.strategy.RecordIdStrategy",
 
+          "value.converter.apicurio.registry.artifact.group-id": "shipment",
           "value.converter.apicurio.registry.use.headers": "true",
           "value.converter.apicurio.registry.use-id": "globalId"
   }'
