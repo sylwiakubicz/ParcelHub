@@ -24,7 +24,6 @@ curl -sS -X PUT http://localhost:8083/connectors/pg-outbox/config \
           "transforms.outbox.table.field.event.key": "aggregate_id",
           "transforms.outbox.table.field.payload": "payload",
           "transforms.outbox.table.field.timestamp": "created_at",
-          "transforms.outbox.table.expand.json.payload": "true",
           "transforms.outbox.table.fields.additional.placement": "event_type:header,headers:header",
 
           "transforms.setShipCreated.type": "org.apache.kafka.connect.transforms.SetSchemaMetadata$Value",
