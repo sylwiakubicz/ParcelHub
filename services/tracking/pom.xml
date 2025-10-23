@@ -82,6 +82,48 @@
 			</plugin>
 
 			<plugin>
+				<groupId>io.apicurio</groupId>
+				<artifactId>apicurio-registry-maven-plugin</artifactId>
+				<version>2.5.10.Final</version>
+				<executions>
+					<execution>
+						<id>download-avro-schemas</id>
+						<phase>generate-sources</phase>
+						<goals><goal>download</goal></goals>
+						<configuration>
+							<registryUrl>http://localhost:8081/apis/registry/v2</registryUrl>
+							<artifacts>
+								<artifact>
+									<groupId>shipment</groupId>
+									<artifactId>ShipmentCreated</artifactId>
+									<file>${project.basedir}/src/main/avro/ShipmentCreated.avsc</file>
+									<overwrite>true</overwrite>
+								</artifact>
+								<artifact>
+									<groupId>shipment</groupId>
+									<artifactId>ReturnInitiated</artifactId>
+									<file>${project.basedir}/src/main/avro/ReturnInitiated.avsc</file>
+									<overwrite>true</overwrite>
+								</artifact>
+								<artifact>
+									<groupId>shipment</groupId>
+									<artifactId>payload.sender</artifactId>
+									<file>${project.basedir}/src/main/avro/payload.sender.avsc</file>
+									<overwrite>true</overwrite>
+								</artifact>
+								<artifact>
+									<groupId>shipment</groupId>
+									<artifactId>payload.recipient</artifactId>
+									<file>${project.basedir}/src/main/avro/payload.recipient.avsc</file>
+									<overwrite>true</overwrite>
+								</artifact>
+							</artifacts>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
 				<groupId>org.apache.avro</groupId>
 				<artifactId>avro-maven-plugin</artifactId>
 				<version>1.11.3</version>
@@ -90,11 +132,14 @@
 						<phase>generate-sources</phase>
 						<goals><goal>schema</goal></goals>
 						<configuration>
-							<sourceDirectory>${project.basedir}/../../schemas/avro</sourceDirectory>
+							<sourceDirectory>${project.basedir}/src/main/avro</sourceDirectory>
 							<outputDirectory>${project.build.directory}/generated-sources/avro</outputDirectory>
 							<stringType>String</stringType>
-							<fieldVisibility>PRIVATE</fieldVisibility>
 							<enableDecimalLogicalType>true</enableDecimalLogicalType>
+							<imports>
+								<import>${project.basedir}/src/main/avro/payload.sender.avsc</import>
+								<import>${project.basedir}/src/main/avro/payload.recipient.avsc</import>
+							</imports>
 						</configuration>
 					</execution>
 				</executions>
