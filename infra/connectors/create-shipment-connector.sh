@@ -47,14 +47,12 @@ curl -sS -X POST http://localhost:8083/connectors \
           "transforms.toOneTopic.replacement": "shipment-events",
 
           "key.converter": "org.apache.kafka.connect.storage.StringConverter",
-          "value.converter": "io.apicurio.registry.utils.converter.SerdeBasedConverter",
+          "value.converter": "io.apicurio.registry.utils.converter.AvroConverter",
           "value.converter.apicurio.registry.url": "http://apicurio:8080/apis/registry/v2",
 
           "value.converter.apicurio.registry.converter.serializer": "io.apicurio.registry.serde.avro.AvroKafkaSerializer"
           "value.converter.apicurio.registry.artifact-resolver-strategy": "io.apicurio.registry.serde.avro.strategy.RecordIdStrategy",
-          "value.converter.apicurio.registry.artifact.artifact-id": "io.apicurio.registry.serde.strategy.RecordIdStrategy",
 
-          "value.converter.apicurio.registry.artifact.group-id": "shipment",
           "value.converter.apicurio.registry.use.headers": "true",
           "value.converter.apicurio.registry.use-id": "globalId"
     }
