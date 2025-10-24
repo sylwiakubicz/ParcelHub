@@ -61,8 +61,9 @@ public class TrackingKafkaConfig {
         props.put(NUM_STANDBY_REPLICAS_CONFIG, 1);
 
         props.put("apicurio.registry.url", apicurioUrl);
-        props.put("apicurio.registry.find-latest", true);
-        props.put("apicurio.registry.use-specific-avro", false);
+        props.put("apicurio.registry.use-specific-avro-reader", true);
+        props.put("apicurio.registry.use-id", "globalId");
+        props.put("apicurio.registry.use.headers", true);
 
         props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, iqHost + ":" + iqPort);
 
