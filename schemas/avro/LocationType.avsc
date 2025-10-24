@@ -1,0 +1,10 @@
+{
+  "type": "enum",
+  "name": "LocationType",
+  "namespace": "com.parcelhub.tracking",
+  "symbols": [
+    "LOCKER",
+    "HUB",
+    "NONE"
+  ]
+}

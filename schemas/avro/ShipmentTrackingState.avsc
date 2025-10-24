@@ -1,0 +1,14 @@
+
+{
+  "type": "record",
+  "name": "ShipmentTrackingState",
+  "namespace": "com.parcelhub.tracking",
+  "fields": [
+    { "name": "shipmentId", "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "status", "type": "com.parcelhub.tracking.ShipmentStatus"},
+    { "name": "lastUpdate", "type": { "type": "long", "logicalType": "timestamp-millis" } },
+    { "name": "lastLocation", "type": "com.parcelhub.tracking.LastLocation", "default": { "type": "NONE", "id": null }},
+    { "name": "destinationLockerId", "type": ["null", "string"], "default": null },
+    { "name": "version", "type": "int", "default": 0 }
+  ]
+}
