@@ -1,0 +1,1 @@
+{"type":"record","name":"recipient","namespace":"payload","fields":[{"name":"zip","type":["null","string"],"default":null},{"name":"name","type":["null","string"],"default":null}],"connect.name":"payload.recipient"}
