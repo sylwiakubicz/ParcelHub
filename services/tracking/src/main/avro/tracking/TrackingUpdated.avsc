@@ -1,0 +1,15 @@
+{
+  "type": "record",
+  "name": "TrackingUpdated",
+  "namespace": "com.parcelhub.tracking",
+  "fields": [
+    { "name": "eventId", "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "shipmentId", "type": { "type": "string", "logicalType": "uuid" } },
+
+    { "name": "oldStatus", "type": ["null", "ShipmentStatus"], "default": null },
+    { "name": "newStatus", "type": "ShipmentStatus"},
+
+    { "name": "changedAt", "type": { "type": "long", "logicalType": "timestamp-millis" } },
+    { "name": "location", "type": "LastLocation"}
+  ]
+}

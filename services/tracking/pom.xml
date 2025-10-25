@@ -28,6 +28,13 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+
+		<apicurio.registry.url>http://localhost:8081</apicurio.registry.url>
+		<apicurio.registry.plugin.version>2.5.10.Final</apicurio.registry.plugin.version>
+
+		<schemas.version>1</schemas.version>
+
+		<schemas.dir>${project.basedir}/src/main/avro/tracking</schemas.dir>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -80,71 +87,202 @@
 					</image>
 				</configuration>
 			</plugin>
-
-			<plugin>
-				<groupId>io.apicurio</groupId>
-				<artifactId>apicurio-registry-maven-plugin</artifactId>
-				<version>2.5.10.Final</version>
-				<executions>
-					<execution>
-						<id>download-avro-schemas</id>
-						<phase>generate-sources</phase>
-						<goals><goal>download</goal></goals>
-						<configuration>
-							<registryUrl>http://localhost:8081/apis/registry/v2</registryUrl>
-							<artifacts>
-								<artifact>
-									<groupId>shipment</groupId>
-									<artifactId>ShipmentCreated</artifactId>
-									<file>${project.basedir}/src/main/avro/ShipmentCreated.avsc</file>
-									<overwrite>true</overwrite>
-								</artifact>
-								<artifact>
-									<groupId>shipment</groupId>
-									<artifactId>ReturnInitiated</artifactId>
-									<file>${project.basedir}/src/main/avro/ReturnInitiated.avsc</file>
-									<overwrite>true</overwrite>
-								</artifact>
-								<artifact>
-									<groupId>shipment</groupId>
-									<artifactId>payload.sender</artifactId>
-									<file>${project.basedir}/src/main/avro/payload.sender.avsc</file>
-									<overwrite>true</overwrite>
-								</artifact>
-								<artifact>
-									<groupId>shipment</groupId>
-									<artifactId>payload.recipient</artifactId>
-									<file>${project.basedir}/src/main/avro/payload.recipient.avsc</file>
-									<overwrite>true</overwrite>
-								</artifact>
-							</artifacts>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.avro</groupId>
-				<artifactId>avro-maven-plugin</artifactId>
-				<version>1.11.3</version>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals><goal>schema</goal></goals>
-						<configuration>
-							<sourceDirectory>${project.basedir}/src/main/avro</sourceDirectory>
-							<outputDirectory>${project.build.directory}/generated-sources/avro</outputDirectory>
-							<stringType>String</stringType>
-							<enableDecimalLogicalType>true</enableDecimalLogicalType>
-							<imports>
-								<import>${project.basedir}/src/main/avro/payload.sender.avsc</import>
-								<import>${project.basedir}/src/main/avro/payload.recipient.avsc</import>
-							</imports>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>generate-schema-classes</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.avro</groupId>
+						<artifactId>avro-maven-plugin</artifactId>
+						<version>1.11.3</version>
+						<executions>
+							<execution>
+								<phase>generate-sources</phase>
+								<goals><goal>schema</goal></goals>
+								<configuration>
+									<sourceDirectory>${project.basedir}/src/main/avro</sourceDirectory>
+									<outputDirectory>${project.build.directory}/generated-sources/avro</outputDirectory>
+									<stringType>String</stringType>
+									<enableDecimalLogicalType>true</enableDecimalLogicalType>
+									<imports>
+										<import>${project.basedir}/src/main/avro/payload.sender.avsc</import>
+										<import>${project.basedir}/src/main/avro/payload.recipient.avsc</import>
+									</imports>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>download-schemas</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.apicurio</groupId>
+						<artifactId>apicurio-registry-maven-plugin</artifactId>
+						<version>${apicurio.registry.plugin.version}</version>
+						<executions>
+							<execution>
+								<id>download-avro-schemas</id>
+								<phase>generate-sources</phase>
+								<goals><goal>download</goal></goals>
+								<configuration>
+									<registryUrl>${apicurio.registry.url}/apis/registry/v2</registryUrl>
+									<artifacts>
+										<artifact>
+											<groupId>shipment</groupId>
+											<artifactId>ShipmentCreated</artifactId>
+											<file>${project.basedir}/src/main/avro/ShipmentCreated.avsc</file>
+											<overwrite>true</overwrite>
+										</artifact>
+										<artifact>
+											<groupId>shipment</groupId>
+											<artifactId>ReturnInitiated</artifactId>
+											<file>${project.basedir}/src/main/avro/ReturnInitiated.avsc</file>
+											<overwrite>true</overwrite>
+										</artifact>
+										<artifact>
+											<groupId>shipment</groupId>
+											<artifactId>payload.sender</artifactId>
+											<file>${project.basedir}/src/main/avro/payload.sender.avsc</file>
+											<overwrite>true</overwrite>
+										</artifact>
+										<artifact>
+											<groupId>shipment</groupId>
+											<artifactId>payload.recipient</artifactId>
+											<file>${project.basedir}/src/main/avro/payload.recipient.avsc</file>
+											<overwrite>true</overwrite>
+										</artifact>
+									</artifacts>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>register-schemas</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.apicurio</groupId>
+						<artifactId>apicurio-registry-maven-plugin</artifactId>
+						<version>${apicurio.registry.plugin.version}</version>
+						<executions>
+							<execution>
+								<id>register-tracking-schemas</id>
+								<phase>generate-sources</phase>
+								<goals><goal>register</goal></goals>
+								<configuration>
+									<registryUrl>${apicurio.registry.url}/apis/registry/v2</registryUrl>
+
+									<existingReferences>
+										<existingReference>
+											<groupId>com.parcelhub.tracking</groupId>
+											<artifactId>LocationType</artifactId>
+											<version>${schemas.version}</version>
+											<resourceName>com.parcelhub.tracking.LocationType</resourceName>
+										</existingReference>
+										<existingReference>
+											<groupId>com.parcelhub.tracking</groupId>
+											<artifactId>ShipmentStatus</artifactId>
+											<version>${schemas.version}</version>
+											<resourceName>com.parcelhub.tracking.ShipmentStatus</resourceName>
+										</existingReference>
+										<existingReference>
+											<groupId>com.parcelhub.tracking</groupId>
+											<artifactId>LastLocation</artifactId>
+											<version>${schemas.version}</version>
+											<resourceName>com.parcelhub.tracking.LastLocation</resourceName>
+										</existingReference>
+									</existingReferences>
+
+									<artifacts>
+										<artifact>
+											<groupId>com.parcelhub.tracking</groupId>
+											<artifactId>ShipmentTrackingState</artifactId>
+											<version>${schemas.version}</version>
+											<file>${schemas.dir}/ShipmentTrackingState.avsc</file>
+											<type>AVRO</type>
+											<ifExists>RETURN_OR_UPDATE</ifExists>
+											<canonicalize>true</canonicalize>
+
+											<references>
+												<reference>
+													<name>com.parcelhub.tracking.LocationType</name>
+													<groupId>com.parcelhub.tracking</groupId>
+													<artifactId>LocationType</artifactId>
+													<version>${schemas.version}</version>
+													<type>AVRO</type>
+													<file>${schemas.dir}/LocationType.avsc</file>
+													<ifExists>RETURN</ifExists>
+												</reference>
+												<reference>
+													<name>com.parcelhub.tracking.ShipmentStatus</name>
+													<groupId>com.parcelhub.tracking</groupId>
+													<artifactId>ShipmentStatus</artifactId>
+													<version>${schemas.version}</version>
+													<type>AVRO</type>
+													<file>${schemas.dir}/ShipmentStatus.avsc</file>
+													<ifExists>RETURN</ifExists>
+												</reference>
+												<reference>
+													<name>com.parcelhub.tracking.LastLocation</name>
+													<groupId>com.parcelhub.tracking</groupId>
+													<artifactId>LastLocation</artifactId>
+													<version>${schemas.version}</version>
+													<type>AVRO</type>
+													<file>${schemas.dir}/LastLocation.avsc</file>
+													<ifExists>RETURN</ifExists>
+												</reference>
+											</references>
+										</artifact>
+										<artifact>
+											<groupId>com.parcelhub.tracking</groupId>
+											<artifactId>TrackingUpdated</artifactId>
+											<version>${schemas.version}</version>
+											<file>${schemas.dir}/TrackingUpdated.avsc</file>
+											<type>AVRO</type>
+											<ifExists>RETURN_OR_UPDATE</ifExists>
+											<canonicalize>true</canonicalize>
+
+											<references>
+												<reference>
+													<name>com.parcelhub.tracking.ShipmentStatus</name>
+													<groupId>com.parcelhub.tracking</groupId>
+													<artifactId>ShipmentStatus</artifactId>
+													<version>${schemas.version}</version>
+													<type>AVRO</type>
+													<file>${schemas.dir}/ShipmentStatus.avsc</file>
+													<ifExists>RETURN</ifExists>
+												</reference>
+												<reference>
+													<name>com.parcelhub.tracking.LastLocation</name>
+													<groupId>com.parcelhub.tracking</groupId>
+													<artifactId>LastLocation</artifactId>
+													<version>${schemas.version}</version>
+													<type>AVRO</type>
+													<file>${schemas.dir}/LastLocation.avsc</file>
+													<ifExists>RETURN</ifExists>
+												</reference>
+											</references>
+										</artifact>
+									</artifacts>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>
