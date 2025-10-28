@@ -3,7 +3,7 @@
   "name": "LastLocation",
   "namespace": "com.parcelhub.tracking",
   "fields": [
-      { "name": "type", "type": "com.parcelhub.tracking.LocationType", "default": "NONE"},
+      { "name": "type", "type": "LocationType", "default": "NONE"},
       { "name": "id", "type": ["null", "string"], "default": null }
     ]
 }
