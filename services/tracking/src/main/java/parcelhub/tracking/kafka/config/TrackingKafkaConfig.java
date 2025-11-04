@@ -1,5 +1,7 @@
 package parcelhub.tracking.kafka.config;
 
+import io.apicurio.registry.serde.SerdeConfig;
+import io.apicurio.registry.serde.avro.strategy.RecordIdStrategy;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.streams.StreamsConfig;
@@ -64,6 +66,9 @@ public class TrackingKafkaConfig {
         props.put("apicurio.registry.use-specific-avro-reader", true);
         props.put("apicurio.registry.use-id", "globalId");
         props.put("apicurio.registry.use.headers", true);
+        props.put(SerdeConfig.ARTIFACT_RESOLVER_STRATEGY, RecordIdStrategy.class.getName());
+        props.put(SerdeConfig.AUTO_REGISTER_ARTIFACT, false);
+        props.put("apicurio.registry.find-latest", true);
 
         props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, iqHost + ":" + iqPort);
 
