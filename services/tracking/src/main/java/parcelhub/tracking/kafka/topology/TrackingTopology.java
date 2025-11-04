@@ -1,18 +1,25 @@
 package parcelhub.tracking.kafka.topology;
 
 
+import com.parcelhub.tracking.ShipmentTrackingState;
 import org.apache.avro.specific.SpecificRecord;
+import org.apache.kafka.common.serialization.Serdes;
+import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.Named;
+import org.apache.kafka.streams.kstream.*;
+import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.support.serializer.JsonSerde;
 import parcelhub.tracking.kafka.config.TopicConfig;
 import parcelhub.tracking.kafka.dto.TrackingDelta;
+import parcelhub.tracking.kafka.logic.TrackingAggregator;
 import parcelhub.tracking.kafka.mapper.DeltaMapper;
+
+import static parcelhub.tracking.kafka.topology.TopologyNames.TRACKING_TABLE_STORE;
 
 @Configuration
 public class TrackingTopology {
@@ -28,7 +35,7 @@ public class TrackingTopology {
     }
 
     @Bean
-    public KStream<String, TrackingDelta> shipmentEventsStream(StreamsBuilder builder) {
+    public KStream<String, TrackingDelta> trackingDeltas(StreamsBuilder builder) {
 
         KStream<String, SpecificRecord> stream =
                 builder.stream(topicConfig.getShipmentEvents());
@@ -51,5 +58,38 @@ public class TrackingTopology {
                 ));
 
         return deltas;
+    }
+
+    @Bean
+    public KTable<String, ShipmentTrackingState> shipmentTrackingTable(KStream<String, TrackingDelta> trackingDeltas) {
+        TrackingAggregator aggregator = new TrackingAggregator();
+
+        Aggregator<String, TrackingDelta, ShipmentTrackingState> adder = (key, delta, current) ->
+                aggregator.apply(current, delta);
+
+        Initializer<ShipmentTrackingState> initializer = aggregator::init;
+
+        Materialized<String, ShipmentTrackingState, KeyValueStore<Bytes, byte[]>> materialized =
+                Materialized.<String, ShipmentTrackingState, KeyValueStore<Bytes, byte[]>>as(TRACKING_TABLE_STORE)
+                        .withKeySerde(Serdes.String());
+
+        JsonSerde<TrackingDelta> deltaSerde = new JsonSerde<>(TrackingDelta.class);
+
+        var table = trackingDeltas
+                .groupByKey(Grouped.with("deltas-by-shipment", Serdes.String(), deltaSerde))
+                .aggregate(initializer, adder, materialized);
+
+        table.toStream().peek((k,v) ->
+                log.info("STATE key={} status={} lastUpdate={} locType={} locId={} dest={} ver={}",
+                        k,
+                        v.getStatus(),
+                        v.getLastUpdate(),
+                        v.getLastLocation() != null ? v.getLastLocation().getType() : null,
+                        v.getLastLocation() != null ? v.getLastLocation().getId() : null,
+                        v.getDestinationLockerId(),
+                        v.getVersion()
+                )
+        );
+        return table;
     }
 }
