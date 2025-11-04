@@ -4,6 +4,6 @@
   "namespace": "com.parcelhub.tracking",
   "fields": [
       { "name": "type", "type": "LocationType", "default": "NONE"},
-      { "name": "id", "type": ["null", "string"], "default": null }
+      { "name": "id", "type": ["null", { "type": "string", "avro.java.string":"String" }], "default": null }
     ]
 }

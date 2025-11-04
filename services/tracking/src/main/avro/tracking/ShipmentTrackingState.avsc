@@ -8,7 +8,7 @@
     { "name": "status", "type": "ShipmentStatus"},
     { "name": "lastUpdate", "type": { "type": "long", "logicalType": "timestamp-millis" } },
     { "name": "lastLocation", "type": "LastLocation", "default": { "type": "NONE", "id": null }},
-    { "name": "destinationLockerId", "type": ["null", "string"], "default": null },
+    { "name": "destinationLockerId", "type": ["null", { "type": "string", "avro.java.string":"String" }], "default": null },
     { "name": "version", "type": "int", "default": 0 }
   ]
 }
