@@ -239,6 +239,27 @@
 									<artifacts>
 										<artifact>
 											<groupId>com.parcelhub.tracking</groupId>
+											<artifactId>LastLocation</artifactId>
+											<version>${schemas.version}</version>
+											<file>${schemas.dir}/LastLocation.avsc</file>
+											<type>AVRO</type>
+											<ifExists>RETURN_OR_UPDATE</ifExists>
+											<canonicalize>true</canonicalize>
+
+											<references>
+												<reference>
+													<name>com.parcelhub.tracking.LocationType</name>
+													<groupId>com.parcelhub.tracking</groupId>
+													<artifactId>LocationType</artifactId>
+													<version>${schemas.version}</version>
+													<type>AVRO</type>
+													<file>${schemas.dir}/LocationType.avsc</file>
+													<ifExists>RETURN</ifExists>
+												</reference>
+											</references>
+										</artifact>
+										<artifact>
+											<groupId>com.parcelhub.tracking</groupId>
 											<artifactId>ShipmentTrackingState</artifactId>
 											<version>${schemas.version}</version>
 											<file>${schemas.dir}/ShipmentTrackingState.avsc</file>
