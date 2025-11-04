@@ -44,7 +44,6 @@ create_topic connect-offsets 12 3 compact ""
 create_topic connect-status 6 3 compact ""
 create_topic tracking-updates 12 3 delete 1209600000
 create_topic shipment-tracking 12 3 compact ""
-create_topic parcelhub-tracking-service-tracking-state-changelog 12 3 compact ""
 
 
 echo "✅ Topiki utworzone."
