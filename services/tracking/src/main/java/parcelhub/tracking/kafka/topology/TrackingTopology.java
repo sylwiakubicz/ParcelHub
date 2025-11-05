@@ -2,7 +2,6 @@ package parcelhub.tracking.kafka.topology;
 
 import com.parcelhub.tracking.ShipmentTrackingState;
 import com.parcelhub.tracking.TrackingUpdated;
-import io.apicurio.registry.serde.avro.AvroSerde;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -21,6 +20,8 @@ import parcelhub.tracking.kafka.config.TopicConfig;
 import parcelhub.tracking.kafka.dto.TrackingDelta;
 import parcelhub.tracking.kafka.logic.TrackingAggregator;
 import parcelhub.tracking.kafka.mapper.DeltaMapper;
+import parcelhub.tracking.kafka.transformer.DeltaMappingTransformer;
+import parcelhub.tracking.kafka.transformer.TrackingUpdateTransformer;
 
 import static parcelhub.tracking.kafka.topology.TopologyNames.TRACKING_TABLE_STORE;
 

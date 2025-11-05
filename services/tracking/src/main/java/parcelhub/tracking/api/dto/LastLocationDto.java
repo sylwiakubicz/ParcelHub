@@ -1,4 +1,4 @@
-package parcelhub.tracking.api;
+package parcelhub.tracking.api.dto;
 
 import com.parcelhub.tracking.LastLocation;
 import com.parcelhub.tracking.LocationType;

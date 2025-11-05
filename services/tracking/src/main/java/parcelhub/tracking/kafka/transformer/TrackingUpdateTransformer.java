@@ -1,4 +1,4 @@
-package parcelhub.tracking.kafka.topology;
+package parcelhub.tracking.kafka.transformer;
 
 import com.parcelhub.tracking.ShipmentStatus;
 import com.parcelhub.tracking.ShipmentTrackingState;

@@ -1,4 +1,4 @@
-package parcelhub.tracking.api;
+package parcelhub.tracking.api.controller;
 
 import com.parcelhub.tracking.ShipmentTrackingState;
 import org.apache.kafka.streams.KafkaStreams;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import parcelhub.tracking.api.dto.TrackingResponseDto;
 
 import static parcelhub.tracking.kafka.topology.TopologyNames.TRACKING_TABLE_STORE;
 

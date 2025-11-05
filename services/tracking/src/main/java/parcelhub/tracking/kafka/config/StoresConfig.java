@@ -1,4 +1,4 @@
-package parcelhub.tracking.kafka.topology;
+package parcelhub.tracking.kafka.config;
 
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
