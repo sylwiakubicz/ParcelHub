@@ -1,10 +1,7 @@
 package parcelhub.tracking.kafka.topology;
 
-
 import com.parcelhub.tracking.ShipmentTrackingState;
-import io.apicurio.registry.serde.avro.AvroSerde;
 import org.apache.avro.specific.SpecificRecord;
-import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
