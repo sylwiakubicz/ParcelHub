@@ -1,14 +1,18 @@
 package parcelhub.tracking.kafka.topology;
 
 import com.parcelhub.tracking.ShipmentTrackingState;
+import com.parcelhub.tracking.TrackingUpdated;
+import io.apicurio.registry.serde.avro.AvroSerde;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.StoreBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -94,4 +98,25 @@ public class TrackingTopology {
 
         return table;
     }
+
+    @Bean
+    public KStream<String, TrackingUpdated> trackingUpdatesStream(
+            StreamsBuilder builder,
+            @Qualifier("statusIndexStoreBuilder") StoreBuilder<?> statusIndexStoreBuilder,
+            KTable<String, ShipmentTrackingState> shipmentTrackingTable) {
+
+        builder.addStateStore(statusIndexStoreBuilder);
+
+        var updates = shipmentTrackingTable
+                .toStream()
+                .transformValues(TrackingUpdateTransformer::new,
+                        Named.as("status-change-only"),
+                        TopologyNames.STATUS_INDEX_STORE)
+                .filter((k, evt) -> evt != null);
+
+        updates.to(topicConfig.getTrackingUpdates());
+
+        return updates;
+    }
+
 }
