@@ -51,3 +51,6 @@ networks:
 secrets:
   db_password:
     file: ../../secrets/postgres_password.txt
+
+volumes:
+  tracking-state:
