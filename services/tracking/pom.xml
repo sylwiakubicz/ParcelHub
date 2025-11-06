@@ -108,29 +108,12 @@
 							<imports>
 								<import>${project.basedir}/src/main/avro/payload.sender.avsc</import>
 								<import>${project.basedir}/src/main/avro/payload.recipient.avsc</import>
-							</imports>
-						</configuration>
-					</execution>
-
-					<execution>
-						<id>generate-tracking-avro</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>schema</goal>
-						</goals>
-						<configuration>
-							<sourceDirectory>${project.basedir}/src/main/avro/tracking</sourceDirectory>
-							<outputDirectory>${project.build.directory}/generated-sources/avro</outputDirectory>
-							<stringType>String</stringType>
-							<enableDecimalLogicalType>true</enableDecimalLogicalType>
-							<imports>
 								<import>${project.basedir}/src/main/avro/tracking/LocationType.avsc</import>
 								<import>${project.basedir}/src/main/avro/tracking/ShipmentStatus.avsc</import>
 								<import>${project.basedir}/src/main/avro/tracking/LastLocation.avsc</import>
 							</imports>
 						</configuration>
 					</execution>
-
 				</executions>
 			</plugin>
 
