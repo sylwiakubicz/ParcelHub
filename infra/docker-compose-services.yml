@@ -17,6 +17,32 @@ services:
     secrets:
       - db_password
 
+
+  tracking-service:
+    image: parcelhub/tracking:0.1.0
+    ports:
+     - "8085:8085"
+    container_name: tracking-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8085/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    environment:
+      APICURIO_URL: "http://apicurio:8080/apis/registry/v2"
+      IQ_HOST: "tracking-service"
+      KAFKA_APPLICATION_ID: "parcelhub-tracking-service-v2"
+      KAFKA_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+      KAFKA_STATE_DIR: "/var/lib/kafka-streams/state"
+      SERVER_PORT: 8085
+      STORE_NAME: "tracking-state"
+      TOPIC_SHIPMENT_EVENTS: "shipment-events"
+      TOPIC_SHIPMENT_TRACKING: "shipment-tracking"
+      TOPIC_TRACKING_UPDATES: "tracking-updates"
+    volumes:
+      - tracking-state:/var/lib/kafka-streams/state
+
 networks:
   default:
     external: true
