@@ -28,6 +28,13 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+
+		<apicurio.registry.url>http://localhost:8081</apicurio.registry.url>
+		<apicurio.registry.plugin.version>2.5.10.Final</apicurio.registry.plugin.version>
+
+		<schemas.version>1</schemas.version>
+
+		<schemas.dir>${project.basedir}/src/main/avro</schemas.dir>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -73,5 +80,69 @@
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>register-schemas</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.apicurio</groupId>
+						<artifactId>apicurio-registry-maven-plugin</artifactId>
+						<version>${apicurio.registry.plugin.version}</version>
+						<executions>
+							<execution>
+								<id>register-tracking-schemas</id>
+								<phase>generate-sources</phase>
+								<goals><goal>register</goal></goals>
+								<configuration>
+									<registryUrl>${apicurio.registry.url}/apis/registry/v2</registryUrl>
+
+									<artifacts>
+										<artifact>
+											<groupId>com.parcelhub.shipment</groupId>
+											<artifactId>DeliveredToLocker</artifactId>
+											<version>${schemas.version}</version>
+											<file>${schemas.dir}/DeliveredToLocker.avsc</file>
+											<type>AVRO</type>
+											<ifExists>RETURN_OR_UPDATE</ifExists>
+											<canonicalize>true</canonicalize>
+										</artifact>
+										<artifact>
+											<groupId>com.parcelhub.shipment</groupId>
+											<artifactId>DropOffRegistered</artifactId>
+											<version>${schemas.version}</version>
+											<file>${schemas.dir}/DropOffRegistered.avsc</file>
+											<type>AVRO</type>
+											<ifExists>RETURN_OR_UPDATE</ifExists>
+											<canonicalize>true</canonicalize>
+										</artifact>
+										<artifact>
+											<groupId>com.parcelhub.shipment</groupId>
+											<artifactId>PickupConfirmed</artifactId>
+											<version>${schemas.version}</version>
+											<file>${schemas.dir}/PickupConfirmed.avsc</file>
+											<type>AVRO</type>
+											<ifExists>RETURN_OR_UPDATE</ifExists>
+											<canonicalize>true</canonicalize>
+										</artifact>
+										<artifact>
+											<groupId>com.parcelhub.shipment</groupId>
+											<artifactId>ReadyForPickup</artifactId>
+											<version>${schemas.version}</version>
+											<file>${schemas.dir}/ReadyForPickup.avsc</file>
+											<type>AVRO</type>
+											<ifExists>RETURN_OR_UPDATE</ifExists>
+											<canonicalize>true</canonicalize>
+										</artifact>
+									</artifacts>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>
