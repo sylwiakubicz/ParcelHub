@@ -306,6 +306,83 @@
 				</plugins>
 			</build>
 		</profile>
+
+		<profile>
+			<id>register-schemas-shipment</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.apicurio</groupId>
+						<artifactId>apicurio-registry-maven-plugin</artifactId>
+						<version>${apicurio.registry.plugin.version}</version>
+						<executions>
+							<execution>
+								<id>register-shipment-schemas</id>
+								<phase>generate-sources</phase>
+								<goals><goal>register</goal></goals>
+								<configuration>
+									<registryUrl>${apicurio.registry.url}/apis/registry/v2</registryUrl>
+									<existingReferences>
+											<existingReference>
+												<groupId>payload</groupId>
+												<artifactId>recipient</artifactId>
+												<version>${schemas.version}</version>
+												<resourceName>payload.recipient</resourceName>
+											</existingReference>
+											<existingReference>
+												<groupId>payload</groupId>
+												<artifactId>sender</artifactId>
+												<version>${schemas.version}</version>
+												<resourceName>payload.sender</resourceName>
+											</existingReference>
+									</existingReferences>
+									<artifacts>
+										<artifact>
+											<groupId>com.parcelhub.shipment</groupId>
+											<artifactId>ShipmentCreated</artifactId>
+											<version>${schemas.version}</version>
+											<file>${project.basedir}/src/main/avro/ShipmentCreated.avsc</file>
+											<type>AVRO</type>
+											<ifExists>RETURN_OR_UPDATE</ifExists>
+											<canonicalize>true</canonicalize>
+											<references>
+												<reference>
+													<name>payload.sender</name>
+													<groupId>payload</groupId>
+													<artifactId>sender</artifactId>
+													<version>${schemas.version}</version>
+													<type>AVRO</type>
+													<file>${project.basedir}/src/main/avro/payload.sender.avsc</file>
+													<ifExists>RETURN</ifExists>
+												</reference>
+												<reference>
+													<name>payload.recipient</name>
+													<groupId>payload</groupId>
+													<artifactId>recipient</artifactId>
+													<version>${schemas.version}</version>
+													<type>AVRO</type>
+													<file>${project.basedir}/src/main/avro/payload.recipient.avsc</file>
+													<ifExists>RETURN</ifExists>
+												</reference>
+											</references>
+										</artifact>
+										<artifact>
+											<groupId>com.parcelhub.shipment</groupId>
+											<artifactId>ReturnInitiated</artifactId>
+											<version>${schemas.version}</version>
+											<file>${project.basedir}/src/main/avro/ReturnInitiated.avsc</file>
+											<type>AVRO</type>
+											<ifExists>RETURN_OR_UPDATE</ifExists>
+											<canonicalize>true</canonicalize>
+										</artifact>
+									</artifacts>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 
 </project>
