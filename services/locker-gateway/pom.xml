@@ -97,7 +97,9 @@
 								<goals><goal>register</goal></goals>
 								<configuration>
 									<registryUrl>${apicurio.registry.url}/apis/registry/v2</registryUrl>
-
+									<existingReferences>
+										<existingReference/>
+									</existingReferences>
 									<artifacts>
 										<artifact>
 											<groupId>com.parcelhub.shipment</groupId>
