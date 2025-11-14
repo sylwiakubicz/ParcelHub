@@ -53,4 +53,5 @@ curl -sS -X PUT http://localhost:8083/connectors/pg-outbox/config \
 
           "value.converter.apicurio.registry.use.headers": "true",
           "value.converter.apicurio.registry.use-id": "globalId",
+          "value.converter.apicurio.registry.auto-register": "true"
   }'

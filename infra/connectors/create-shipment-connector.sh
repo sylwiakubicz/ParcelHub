@@ -54,6 +54,7 @@ curl -sS -X POST http://localhost:8083/connectors \
           "value.converter.apicurio.registry.artifact-resolver-strategy": "io.apicurio.registry.serde.avro.strategy.RecordIdStrategy",
 
           "value.converter.apicurio.registry.use.headers": "true",
-          "value.converter.apicurio.registry.use-id": "globalId"
+          "value.converter.apicurio.registry.use-id": "globalId",
+          "value.converter.apicurio.registry.auto-register": "true"
     }
   }'
