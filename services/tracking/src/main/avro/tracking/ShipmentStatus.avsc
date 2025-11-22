@@ -6,6 +6,7 @@
     "CREATED",
     "IN_TRANSIT",
     "AT_HUB",
+    "DROPPED_OFF_AT_LOCKER",
     "DELIVERED_TO_LOCKER",
     "READY_FOR_PICKUP",
     "PICKED_UP",
