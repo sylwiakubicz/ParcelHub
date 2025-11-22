@@ -1,7 +1,6 @@
 package parcelhub.tracking.kafka.mapper;
 
-import com.parcelhub.shipment.ReturnInitiated;
-import com.parcelhub.shipment.ShipmentCreated;
+import com.parcelhub.shipment.*;
 import org.apache.avro.specific.SpecificRecord;
 
 import com.parcelhub.tracking.LocationType;
@@ -25,8 +24,7 @@ public class DeltaMapper {
             String dest = toStringOrNull(sc.getDestinationLockerId());
             if (dest != null && !dest.isBlank()) {
                 d.setDestinationLockerId(dest);
-                d.setNewLocationType(LocationType.LOCKER);
-                d.setNewLocationId(dest);
+                d.setNewLocationType(LocationType.NONE);
             }
 
             return d.isNoOp() ? Optional.empty() : Optional.of(d);
@@ -43,6 +41,52 @@ public class DeltaMapper {
             return Optional.of(d);
         }
 
+        if (record instanceof DropOffRegistered dropOff) {
+            String shipmentId = toStringOrNull(dropOff.getShipmentId());
+            if (shipmentId == null || shipmentId.isBlank()) {
+                return Optional.empty();
+            }
+            long ts = dropOff.getTs().toEpochMilli();
+            String dest = dropOff.getLockerId();
+            TrackingDelta d = TrackingDelta.statusAndLocation(shipmentId, ShipmentStatus.DROPPED_OFF_AT_LOCKER, ts,
+                    LocationType.LOCKER, dest);
+            return Optional.of(d);
+        }
+
+        if (record instanceof DeliveredToLocker deliveredToLocker) {
+            String shipmentId = toStringOrNull(deliveredToLocker.getShipmentId());
+            if (shipmentId == null || shipmentId.isBlank()) {
+                return Optional.empty();
+            }
+            long ts = deliveredToLocker.getTs().toEpochMilli();
+            String dest = toStringOrNull(deliveredToLocker.getLockerId());
+
+            TrackingDelta d = TrackingDelta.statusAndLocation(shipmentId, ShipmentStatus.DELIVERED_TO_LOCKER, ts,
+                    LocationType.LOCKER, dest);
+            return Optional.of(d);
+        }
+
+        if (record instanceof ReadyForPickup readyForPickup) {
+            String shipmentId = toStringOrNull(readyForPickup.getShipmentId());
+            if (shipmentId == null || shipmentId.isBlank()) {
+                return Optional.empty();
+            }
+            long ts = readyForPickup.getTs().toEpochMilli();
+            TrackingDelta d = TrackingDelta.statusOnly(shipmentId, ShipmentStatus.READY_FOR_PICKUP, ts);
+            return Optional.of(d);
+        }
+
+        if (record instanceof PickupConfirmed pickupConfirmed) {
+            String shipmentId = toStringOrNull(pickupConfirmed.getShipmentId());
+            if (shipmentId == null || shipmentId.isBlank()) {
+                return Optional.empty();
+            }
+            String dest = toStringOrNull(pickupConfirmed.getLockerId());
+            long ts = pickupConfirmed.getTs().toEpochMilli();
+            TrackingDelta d = TrackingDelta.statusAndLocation(shipmentId, ShipmentStatus.PICKED_UP, ts,
+                    LocationType.NONE, dest);
+            return Optional.of(d);
+        }
         return Optional.empty();
     }
 
