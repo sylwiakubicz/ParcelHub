@@ -49,4 +49,15 @@ public class TrackingDelta {
         d.setChangedAt(changedAt);
         return d;
     }
+
+    public static TrackingDelta statusAndLocation(String shipmentId, ShipmentStatus status, long changedAt,
+                                                  LocationType newLocationType, String newLocationId) {
+        TrackingDelta d = new TrackingDelta();
+        d.setShipmentId(shipmentId);
+        d.setNewStatus(status);
+        d.setChangedAt(changedAt);
+        d.setNewLocationId(newLocationId);
+        d.setNewLocationType(newLocationType);
+        return d;
+    }
 }
