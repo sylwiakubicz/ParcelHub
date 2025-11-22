@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "DeliveredToLocker",
+  "namespace": "com.parcelhub.shipment",
+  "fields": [
+    { "name": "eventId",    "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "shipmentId", "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "lockerId",     "type": "string" },
+    { "name": "ts",         "type": { "type": "long", "logicalType": "timestamp-millis" } }
+  ]
+}
