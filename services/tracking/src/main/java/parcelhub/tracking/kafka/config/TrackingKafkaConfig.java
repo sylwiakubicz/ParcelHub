@@ -67,7 +67,7 @@ public class TrackingKafkaConfig {
         props.put("apicurio.registry.use-id", "globalId");
         props.put("apicurio.registry.use.headers", true);
         props.put(SerdeConfig.ARTIFACT_RESOLVER_STRATEGY, RecordIdStrategy.class.getName());
-        props.put(SerdeConfig.AUTO_REGISTER_ARTIFACT, false);
+        props.put(SerdeConfig.AUTO_REGISTER_ARTIFACT, true);
         props.put("apicurio.registry.find-latest", true);
 
         props.put(StreamsConfig.APPLICATION_SERVER_CONFIG, iqHost + ":" + iqPort);
