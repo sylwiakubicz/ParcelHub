@@ -77,7 +77,35 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<runImage>paketobuildpacks/ubuntu-noble-run-base:latest</runImage>
+					</image>
+				</configuration>
 			</plugin>
+
+
+			<plugin>
+				<groupId>org.apache.avro</groupId>
+				<artifactId>avro-maven-plugin</artifactId>
+				<version>1.11.3</version>
+				<executions>
+
+					<execution>
+						<id>generate-shipment-avro</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>schema</goal>
+						</goals>
+						<configuration>
+							<sourceDirectory>${project.basedir}/src/main/avro</sourceDirectory>
+							<outputDirectory>${project.build.directory}/generated-sources/avro</outputDirectory>
+							<stringType>String</stringType>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 
