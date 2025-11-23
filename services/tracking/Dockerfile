@@ -6,9 +6,7 @@ RUN mvn dependency:go-offline
 
 COPY src ./src
 
-RUN mvn -q \
-    -Pgenerate-shipment-schema-classes,generate-tracking-schema-classes \
-    -DskipTests package
+RUN mvn package -DskipTests
 
 FROM eclipse-temurin:21-jre
 COPY --from=builder /tracking/target/tracking-service-0.0.1-SNAPSHOT.jar /tracking.jar
