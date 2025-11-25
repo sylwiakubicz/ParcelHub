@@ -1,12 +1,10 @@
 package com.parcelhub.locker_gateway.controller;
 
+import com.parcelhub.locker_gateway.dto.ShipmentInfo;
 import com.parcelhub.locker_gateway.service.LockerService;
 import com.parcelhub.locker_gateway.dto.ResponseDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -19,6 +17,11 @@ public class LockerController {
 
     public LockerController(LockerService lockerService) {
         this.lockerService = lockerService;
+    }
+
+    @GetMapping("/shipments/{id}")
+    public ShipmentInfo getShipment(@PathVariable String id) {
+        return lockerService.getShipmentInfo(id);
     }
 
     @PostMapping("/{lockerId}/shipments/{shipmentId}/drop-off")
