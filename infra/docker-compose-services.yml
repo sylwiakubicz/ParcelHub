@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   shipment-api:
-    image: parcelhub/shipment-api:0.1.0
+    image: sylwiakubicz/shipment-api:0.1.0
     ports:
      - "8080:8080"
     container_name: shipment-api
@@ -19,7 +19,7 @@ services:
 
 
   tracking-service:
-    image: parcelhub/tracking:0.1.0
+    image: sylwiakubicz/tracking:0.2.0
     ports:
      - "8085:8085"
     container_name: tracking-service
