@@ -1,12 +1,14 @@
 package com.parcelhub.locker_gateway.service;
 
+import com.parcelhub.locker_gateway.client.HttpTrackingClient;
 import com.parcelhub.locker_gateway.dto.ResponseDto;
+import com.parcelhub.locker_gateway.dto.ShipmentInfo;
 import com.parcelhub.locker_gateway.dto.ShipmentStatus;
+import com.parcelhub.locker_gateway.exception.ShipmentNotFoundException;
 import com.parcelhub.locker_gateway.kafka.publisher.ShipmentEventPublisher;
 import com.parcelhub.shipment.DeliveredToLocker;
 import com.parcelhub.shipment.DropOffRegistered;
 import com.parcelhub.shipment.PickupConfirmed;
-
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -14,21 +16,27 @@ import java.util.UUID;
 
 @Service
 public class LockerService {
-
     private final ShipmentEventPublisher shipmentEventPublisher;
+    private final HttpTrackingClient httpTrackingClient;
 
-    public LockerService(ShipmentEventPublisher shipmentEventPublisher) {
+    public LockerService(ShipmentEventPublisher shipmentEventPublisher, HttpTrackingClient httpTrackingClient) {
         this.shipmentEventPublisher = shipmentEventPublisher;
+        this.httpTrackingClient = httpTrackingClient;
     }
 
     public ResponseDto createResponseDto(UUID shipmentId, ShipmentStatus status) {
         return new ResponseDto(shipmentId.toString(), status);
     }
 
+    public ShipmentInfo getShipmentInfo(String shipmentId) {
+        return httpTrackingClient.getShipmentInfo(shipmentId)
+                .orElseThrow(() -> new ShipmentNotFoundException(shipmentId));
+    }
+
     // todo generowanie kodu odbioru
 
     public ResponseDto dropOff(String lockerId, UUID shipmentId) {
-        // todo dodac metode validate na lockerid i shipmentid
+        // todo dodac metode validate na shipmentid
 
         DropOffRegistered dropOffRegistered = new DropOffRegistered();
         dropOffRegistered.setLockerId(lockerId);
