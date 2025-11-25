@@ -1,0 +1,75 @@
+package com.parcelhub.locker_gateway.service;
+
+import com.parcelhub.locker_gateway.dto.ResponseDto;
+import com.parcelhub.locker_gateway.dto.ShipmentStatus;
+import com.parcelhub.locker_gateway.kafka.publisher.ShipmentEventPublisher;
+import com.parcelhub.shipment.DeliveredToLocker;
+import com.parcelhub.shipment.DropOffRegistered;
+import com.parcelhub.shipment.PickupConfirmed;
+
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.UUID;
+
+@Service
+public class LockerService {
+
+    private final ShipmentEventPublisher shipmentEventPublisher;
+
+    public LockerService(ShipmentEventPublisher shipmentEventPublisher) {
+        this.shipmentEventPublisher = shipmentEventPublisher;
+    }
+
+    public ResponseDto createResponseDto(UUID shipmentId, ShipmentStatus status) {
+        return new ResponseDto(shipmentId.toString(), status);
+    }
+
+    // todo generowanie kodu odbioru
+
+    public ResponseDto dropOff(String lockerId, UUID shipmentId) {
+        // todo dodac metode validate na lockerid i shipmentid
+
+        DropOffRegistered dropOffRegistered = new DropOffRegistered();
+        dropOffRegistered.setLockerId(lockerId);
+        dropOffRegistered.setShipmentId(shipmentId);
+        dropOffRegistered.setEventId(UUID.randomUUID());
+        dropOffRegistered.setTs(Instant.now());
+
+        shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), dropOffRegistered);
+
+        return createResponseDto(shipmentId, ShipmentStatus.DROPPED_OFF_AT_LOCKER);
+    }
+
+    public ResponseDto deliveredToLocker(UUID shipmentId, String lockerId) {
+        // todo dodac metode validate na lockerid i shipmentid
+
+        DeliveredToLocker deliveredToLocker = new DeliveredToLocker();
+        deliveredToLocker.setShipmentId(shipmentId);
+        deliveredToLocker.setEventId(UUID.randomUUID());
+        deliveredToLocker.setTs(Instant.now());
+        deliveredToLocker.setLockerId(lockerId);
+
+        shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), deliveredToLocker);
+
+        return createResponseDto(shipmentId, ShipmentStatus.DELIVERED_TO_LOCKER);
+
+        // todo tutaj zmiana na readytopickup
+    }
+
+
+    // todo czy tutaj nie powinno być przesyłanie kodu odbioru?
+    public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId) {
+        // todo dodac metode validate na lockerid i shipmentid
+
+        PickupConfirmed pickupConfirmed = new PickupConfirmed();
+        pickupConfirmed.setShipmentId(shipmentId);
+        pickupConfirmed.setEventId(UUID.randomUUID());
+        pickupConfirmed.setTs(Instant.now());
+        pickupConfirmed.setLockerId(lockerId);
+
+        shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), pickupConfirmed);
+
+        return createResponseDto(shipmentId, ShipmentStatus.PICKED_UP);
+    }
+}
