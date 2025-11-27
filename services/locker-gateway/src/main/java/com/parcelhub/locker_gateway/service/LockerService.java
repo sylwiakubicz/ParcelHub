@@ -4,6 +4,7 @@ import com.parcelhub.locker_gateway.client.HttpTrackingClient;
 import com.parcelhub.locker_gateway.dto.ResponseDto;
 import com.parcelhub.locker_gateway.dto.ShipmentInfo;
 import com.parcelhub.locker_gateway.dto.ShipmentStatus;
+import com.parcelhub.locker_gateway.exception.InvalidLockerId;
 import com.parcelhub.locker_gateway.exception.ShipmentNotFoundException;
 import com.parcelhub.locker_gateway.kafka.publisher.ShipmentEventPublisher;
 import com.parcelhub.shipment.DeliveredToLocker;
@@ -12,6 +13,7 @@ import com.parcelhub.shipment.PickupConfirmed;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -36,7 +38,7 @@ public class LockerService {
     // todo generowanie kodu odbioru
 
     public ResponseDto dropOff(String lockerId, UUID shipmentId) {
-        // todo dodac metode validate na shipmentid
+        getShipmentInfo(shipmentId.toString());
 
         DropOffRegistered dropOffRegistered = new DropOffRegistered();
         dropOffRegistered.setLockerId(lockerId);
@@ -50,7 +52,11 @@ public class LockerService {
     }
 
     public ResponseDto deliveredToLocker(UUID shipmentId, String lockerId) {
-        // todo dodac metode validate na lockerid i shipmentid
+        ShipmentInfo info = getShipmentInfo(shipmentId.toString());
+
+        if (!Objects.equals(info.getDestinationLockerId(), lockerId)) {
+            throw new InvalidLockerId(lockerId);
+        }
 
         DeliveredToLocker deliveredToLocker = new DeliveredToLocker();
         deliveredToLocker.setShipmentId(shipmentId);
@@ -65,10 +71,14 @@ public class LockerService {
         // todo tutaj zmiana na readytopickup
     }
 
-
-    // todo czy tutaj nie powinno być przesyłanie kodu odbioru?
     public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId) {
-        // todo dodac metode validate na lockerid i shipmentid
+        ShipmentInfo info = getShipmentInfo(shipmentId.toString());
+
+        if (!Objects.equals(info.getDestinationLockerId(), lockerId)) {
+            throw new InvalidLockerId(lockerId);
+        }
+
+        // todo walidacja kodu odbioru
 
         PickupConfirmed pickupConfirmed = new PickupConfirmed();
         pickupConfirmed.setShipmentId(shipmentId);
@@ -77,6 +87,8 @@ public class LockerService {
         pickupConfirmed.setLockerId(lockerId);
 
         shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), pickupConfirmed);
+
+        // todo przesyłanie kodu odbioru do bazy
 
         return createResponseDto(shipmentId, ShipmentStatus.PICKED_UP);
     }
