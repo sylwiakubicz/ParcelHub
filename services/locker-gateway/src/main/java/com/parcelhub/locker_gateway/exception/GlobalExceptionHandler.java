@@ -16,4 +16,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleIllegalStateException(IllegalStateException e) {
         return ResponseEntity.status(503).body("Tracking service is unavailable");
     }
+
+    @ExceptionHandler(InvalidLockerId.class)
+    public ResponseEntity<?> handleInvalidLockerId(InvalidLockerId e) {
+        return ResponseEntity.status(503).body(e.getMessage());
+    }
 }
