@@ -21,4 +21,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleInvalidLockerId(InvalidLockerId e) {
         return ResponseEntity.status(503).body(e.getMessage());
     }
+
+    @ExceptionHandler(NotReadyToPickUp.class)
+    public ResponseEntity<?> handleNotReadyToPickUp(NotReadyToPickUp e) {
+        return ResponseEntity.status(503).body(e.getMessage());
+    }
 }
