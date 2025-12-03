@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -35,7 +36,16 @@ public class LockerService {
                 .orElseThrow(() -> new ShipmentNotFoundException(shipmentId));
     }
 
-    // todo generowanie kodu odbioru
+    public String generatePickupCode() {
+        int i = new Random().nextInt(900000) + 100000;
+        return Integer.toString(i);
+    }
+
+    // todo hashowanie kodu odbioru
+
+    // todo porównywanie hashu dla pickup
+
+    // todo walidowanie statatusu
 
     public ResponseDto dropOff(String lockerId, UUID shipmentId) {
         getShipmentInfo(shipmentId.toString());
@@ -69,6 +79,8 @@ public class LockerService {
         return createResponseDto(shipmentId, ShipmentStatus.DELIVERED_TO_LOCKER);
 
         // todo tutaj zmiana na readytopickup
+        // todo przesyłanie kodu odbioru do bazy
+
     }
 
     public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId) {
@@ -87,8 +99,6 @@ public class LockerService {
         pickupConfirmed.setLockerId(lockerId);
 
         shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), pickupConfirmed);
-
-        // todo przesyłanie kodu odbioru do bazy
 
         return createResponseDto(shipmentId, ShipmentStatus.PICKED_UP);
     }
