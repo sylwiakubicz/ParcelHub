@@ -5,8 +5,10 @@ import com.parcelhub.locker_gateway.dto.ResponseDto;
 import com.parcelhub.locker_gateway.dto.ShipmentInfo;
 import com.parcelhub.locker_gateway.dto.ShipmentStatus;
 import com.parcelhub.locker_gateway.exception.InvalidLockerId;
+import com.parcelhub.locker_gateway.exception.NotReadyToPickUp;
 import com.parcelhub.locker_gateway.exception.ShipmentNotFoundException;
 import com.parcelhub.locker_gateway.kafka.publisher.ShipmentEventPublisher;
+import com.parcelhub.locker_gateway.security.PickupCodeHasher;
 import com.parcelhub.shipment.DeliveredToLocker;
 import com.parcelhub.shipment.DropOffRegistered;
 import com.parcelhub.shipment.PickupConfirmed;
@@ -21,10 +23,13 @@ import java.util.UUID;
 public class LockerService {
     private final ShipmentEventPublisher shipmentEventPublisher;
     private final HttpTrackingClient httpTrackingClient;
+    private final PickupCodeHasher pickupCodeHasher;
 
-    public LockerService(ShipmentEventPublisher shipmentEventPublisher, HttpTrackingClient httpTrackingClient) {
+    public LockerService(ShipmentEventPublisher shipmentEventPublisher, HttpTrackingClient httpTrackingClient,
+                         PickupCodeHasher pickupCodeHasher) {
         this.shipmentEventPublisher = shipmentEventPublisher;
         this.httpTrackingClient = httpTrackingClient;
+        this.pickupCodeHasher = pickupCodeHasher;
     }
 
     public ResponseDto createResponseDto(UUID shipmentId, ShipmentStatus status) {
@@ -40,12 +45,6 @@ public class LockerService {
         int i = new Random().nextInt(900000) + 100000;
         return Integer.toString(i);
     }
-
-    // todo hashowanie kodu odbioru
-
-    // todo porównywanie hashu dla pickup
-
-    // todo walidowanie statatusu
 
     public ResponseDto dropOff(String lockerId, UUID shipmentId) {
         getShipmentInfo(shipmentId.toString());
@@ -85,6 +84,10 @@ public class LockerService {
 
     public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId) {
         ShipmentInfo info = getShipmentInfo(shipmentId.toString());
+
+        if (info.getStatus() != ShipmentStatus.READY_FOR_PICKUP) {
+            throw new NotReadyToPickUp(shipmentId.toString());
+        }
 
         if (!Objects.equals(info.getDestinationLockerId(), lockerId)) {
             throw new InvalidLockerId(lockerId);
