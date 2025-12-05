@@ -26,4 +26,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleNotReadyToPickUp(NotReadyToPickUp e) {
         return ResponseEntity.status(503).body(e.getMessage());
     }
+
+    @ExceptionHandler(InvalidPickupCodeException.class)
+    public ResponseEntity<?> handleInvalidPickupCodeException(InvalidPickupCodeException e) {
+        return ResponseEntity.status(503).body(e.getMessage());
+    }
 }
