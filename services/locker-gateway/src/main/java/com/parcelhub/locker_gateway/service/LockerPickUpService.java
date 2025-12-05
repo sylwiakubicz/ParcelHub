@@ -20,15 +20,15 @@ public class LockerPickUpService {
 
     private Locker getLockerOrThrow(UUID shipmentId, String lockerId) {
         return lockersRepository.findByShipmentIdAndLockerId(shipmentId, lockerId)
-                .orElseThrow(() -> new LockerNotFoundException(
-                        "Locker %s for shipment %s not found".formatted(lockerId, shipmentId)
-                ));
+                .orElseThrow(() -> new ShipmentNotFoundException(shipmentId.toString()));
     }
 
-    public void saveLocker(String shipmentId, String lockerId, String pickupCodeHash) {
+    public void saveLocker(UUID shipmentId, String lockerId, String pickupCodeHash) {
+
+        // TODO czy potrzbne sprawdzanie że w bazie nie ma wpisu dla niego?
         Locker locker = new Locker();
         locker.setLockerId(lockerId);
-        locker.setShipmentId(UUID.fromString(shipmentId));
+        locker.setShipmentId(shipmentId);
         locker.setGeneratedAt(Instant.now());
         locker.setExpiresAt(Instant.now().plusSeconds(PICKUP_VALIDITY_SECONDS));
         locker.setPickupCodeHash(pickupCodeHash);
@@ -37,12 +37,12 @@ public class LockerPickUpService {
         lockersRepository.save(locker);
     }
 
-    public String getPickupCodeHash(String shipmentId, String lockerId) {
-        return getLockerOrThrow(UUID.fromString(shipmentId), lockerId).getPickupCodeHash();
+    public String getPickupCodeHash(UUID shipmentId, String lockerId) {
+        return getLockerOrThrow(shipmentId, lockerId).getPickupCodeHash();
     }
 
-    public void updateLocker(String shipmentId, String lockerId) {
-        Locker locker = getLockerOrThrow(UUID.fromString(shipmentId), lockerId);
+    public void updateLocker(UUID shipmentId, String lockerId) {
+        Locker locker = getLockerOrThrow(shipmentId, lockerId);
         locker.setUsedAt(Instant.now());
         lockersRepository.save(locker);
     }

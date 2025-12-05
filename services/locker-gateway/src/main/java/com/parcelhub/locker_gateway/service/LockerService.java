@@ -90,7 +90,7 @@ public class LockerService {
             String code = generatePickupCode();
             String codeHash = pickupCodeHasher.hash(shipmentId, lockerId, code);
 
-            lockerPickUpService.saveLocker(shipmentId.toString(), lockerId, codeHash);
+            lockerPickUpService.saveLocker(shipmentId, lockerId, codeHash);
 
             ReadyForPickup readyForPickup = new ReadyForPickup();
             readyForPickup.setLockerId(lockerId);
@@ -126,7 +126,7 @@ public class LockerService {
             }
 
             String givenPickupCodeHash = pickupCodeHasher.hash(shipmentId, lockerId, pickupCode);
-            String actualPickupCodeHash = lockerPickUpService.getPickupCodeHash(shipmentId.toString(), lockerId);
+            String actualPickupCodeHash = lockerPickUpService.getPickupCodeHash(shipmentId, lockerId);
             if (!Objects.equals(actualPickupCodeHash, givenPickupCodeHash)) {
                 throw new InvalidPickupCodeException("Wrong Pickup Code");
             }
@@ -137,7 +137,7 @@ public class LockerService {
             pickupConfirmed.setTs(Instant.now());
             pickupConfirmed.setLockerId(lockerId);
 
-            lockerPickUpService.updateLocker(shipmentId.toString(), lockerId);
+            lockerPickUpService.updateLocker(shipmentId, lockerId);
 
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
                 @Override
