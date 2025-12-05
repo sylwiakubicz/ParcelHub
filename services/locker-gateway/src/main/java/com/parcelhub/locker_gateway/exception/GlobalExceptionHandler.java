@@ -31,4 +31,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleInvalidPickupCodeException(InvalidPickupCodeException e) {
         return ResponseEntity.status(503).body(e.getMessage());
     }
+
+    @ExceptionHandler(LockerNotAvailableException.class)
+    public ResponseEntity<?> handleLockerNotAvailableException(LockerNotAvailableException e) {
+        return ResponseEntity.status(503).body(e.getMessage());
+    }
 }
