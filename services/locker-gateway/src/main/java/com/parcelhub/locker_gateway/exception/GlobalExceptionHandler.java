@@ -10,27 +10,47 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ShipmentNotFoundException.class)
     public ResponseEntity<?> handleShipmentNotFoundException(ShipmentNotFoundException e) {
-        return ResponseEntity.status(404).body(e.getMessage());
+        ApiError error = new ApiError(
+                "SHIPMENT_NOT_FOUND",
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<?> handleIllegalStateException(IllegalStateException e) {
-        return ResponseEntity.status(503).body("Tracking service is unavailable");
+        ApiError error = new ApiError(
+                "TRACKING_SERVICE_UNAVAILABLE",
+                "Tracking service is unavailable"
+        );
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 
     @ExceptionHandler(InvalidLockerId.class)
     public ResponseEntity<?> handleInvalidLockerId(InvalidLockerId e) {
-        return ResponseEntity.status(503).body(e.getMessage());
+        ApiError error = new ApiError(
+                "INVALID_LOCKER_ID",
+                e.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(NotReadyToPickUp.class)
     public ResponseEntity<?> handleNotReadyToPickUp(NotReadyToPickUp e) {
-        return ResponseEntity.status(503).body(e.getMessage());
+        ApiError error = new ApiError(
+                "NOT_READY_FOR_PICKUP",
+                e.getMessage()  // np. "Shipment 123 is not ready for pickup"
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     @ExceptionHandler(InvalidPickupCodeException.class)
     public ResponseEntity<?> handleInvalidPickupCodeException(InvalidPickupCodeException e) {
-        return ResponseEntity.status(503).body(e.getMessage());
+        ApiError error = new ApiError(
+                "INVALID_PICKUP_CODE",
+                e.getMessage()  // np. "Wrong pickup code"
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
     @ExceptionHandler(ReadyToPickupProcessingException.class)
@@ -38,7 +58,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiError(
                         "READY_TO_PICKUP_FAILED",
-                        "Nie udało się przygotować przesyłki do odbioru. Spróbuj ponownie później."
+                        e.getMessage()
                 ));
     }
 
