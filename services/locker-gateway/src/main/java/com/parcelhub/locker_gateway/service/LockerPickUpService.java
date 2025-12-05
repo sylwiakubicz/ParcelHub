@@ -1,5 +1,6 @@
 package com.parcelhub.locker_gateway.service;
 
+import com.parcelhub.locker_gateway.exception.ShipmentNotFoundException;
 import com.parcelhub.locker_gateway.model.Locker;
 import com.parcelhub.locker_gateway.repository.LockersRepository;
 import org.springframework.stereotype.Service;
@@ -29,5 +30,9 @@ public class LockerPickUpService {
         return lockersRepository.save(locker);
     }
 
-    // TODO get pickup code hash
+    public String getPickupCodeHash(String shipmentId, String lockerId) {
+        Locker locker = lockersRepository.findByShipmentIdAndLockerId(UUID.fromString(shipmentId), lockerId)
+                .orElseThrow(() -> new ShipmentNotFoundException(shipmentId));
+        return locker.getPickupCodeHash();
+    }
 }
