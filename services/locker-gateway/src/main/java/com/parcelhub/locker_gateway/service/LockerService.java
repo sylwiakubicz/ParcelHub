@@ -6,11 +6,11 @@ import com.parcelhub.locker_gateway.dto.ResponseDto;
 import com.parcelhub.locker_gateway.dto.ShipmentInfo;
 import com.parcelhub.locker_gateway.dto.ShipmentStatus;
 import com.parcelhub.locker_gateway.exception.InvalidLockerId;
+import com.parcelhub.locker_gateway.exception.InvalidPickupCodeException;
 import com.parcelhub.locker_gateway.exception.NotReadyToPickUp;
 import com.parcelhub.locker_gateway.exception.ShipmentNotFoundException;
 import com.parcelhub.locker_gateway.kafka.publisher.ShipmentEventPublisher;
 import com.parcelhub.locker_gateway.model.Locker;
-import com.parcelhub.locker_gateway.repository.LockersRepository;
 import com.parcelhub.locker_gateway.security.PickupCodeHasher;
 import com.parcelhub.shipment.DeliveredToLocker;
 import com.parcelhub.shipment.DropOffRegistered;
@@ -107,7 +107,6 @@ public class LockerService {
         return null;
     }
 
-    // todo it must get also pickup code
     public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId, String pickupCode) {
         ShipmentInfo info = getShipmentInfo(shipmentId.toString());
 
@@ -119,9 +118,11 @@ public class LockerService {
             throw new InvalidLockerId(lockerId);
         }
 
-        // todo walidacja kodu odbioru
-        String pickupCodeHash = pickupCodeHasher.hash(shipmentId, lockerId, pickupCode);
-
+        String givenPickupCodeHash = pickupCodeHasher.hash(shipmentId, lockerId, pickupCode);
+        String actualPickupCodeHash = lockerPickUpService.getPickupCodeHash(shipmentId.toString(), lockerId);
+        if (!Objects.equals(actualPickupCodeHash, givenPickupCodeHash)) {
+            throw new InvalidPickupCodeException("Wrong Pickup Code");
+        }
 
         PickupConfirmed pickupConfirmed = new PickupConfirmed();
         pickupConfirmed.setShipmentId(shipmentId);
