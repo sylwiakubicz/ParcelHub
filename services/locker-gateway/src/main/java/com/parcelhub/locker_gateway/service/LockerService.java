@@ -16,7 +16,10 @@ import com.parcelhub.shipment.DeliveredToLocker;
 import com.parcelhub.shipment.DropOffRegistered;
 import com.parcelhub.shipment.PickupConfirmed;
 import com.parcelhub.shipment.ReadyForPickup;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -84,27 +87,28 @@ public class LockerService {
         return createResponseDto(shipmentId, ShipmentStatus.DELIVERED_TO_LOCKER);
     }
 
+    @Transactional
     public ReadyToPickupResponseDto readyToPickup(String lockerId, UUID shipmentId) {
         String code = generatePickupCode();
         String codeHash = pickupCodeHasher.hash(shipmentId, lockerId, code);
 
-        Locker locker = lockerPickUpService.saveLocker(shipmentId.toString(), lockerId, codeHash);
+        lockerPickUpService.saveLocker(shipmentId.toString(), lockerId, codeHash);
 
-        // todo transactional method
-        if (locker != null) {
-            ReadyForPickup readyForPickup = new ReadyForPickup();
-            readyForPickup.setLockerId(lockerId);
-            readyForPickup.setShipmentId(shipmentId);
-            readyForPickup.setEventId(UUID.randomUUID());
-            readyForPickup.setTs(Instant.now());
-            readyForPickup.setPickupCode(code);
+        ReadyForPickup readyForPickup = new ReadyForPickup();
+        readyForPickup.setLockerId(lockerId);
+        readyForPickup.setShipmentId(shipmentId);
+        readyForPickup.setEventId(UUID.randomUUID());
+        readyForPickup.setTs(Instant.now());
+        readyForPickup.setPickupCode(code);
 
-            shipmentEventPublisher.sendMessage(shipmentId.toString(), readyForPickup);
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                shipmentEventPublisher.sendMessage(shipmentId.toString(), readyForPickup);
+            }
+        });
 
-            return new ReadyToPickupResponseDto(shipmentId.toString(), ShipmentStatus.READY_FOR_PICKUP, code);
-        }
-
-        return null;
+        return new ReadyToPickupResponseDto(shipmentId.toString(), ShipmentStatus.READY_FOR_PICKUP, code);
     }
 
     public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId, String pickupCode) {
@@ -129,6 +133,8 @@ public class LockerService {
         pickupConfirmed.setEventId(UUID.randomUUID());
         pickupConfirmed.setTs(Instant.now());
         pickupConfirmed.setLockerId(lockerId);
+
+        // todo update in db - already picked up
 
         shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), pickupConfirmed);
 
