@@ -11,7 +11,7 @@ import java.util.UUID;
 @Service
 public class LockerPickUpService {
 
-    private LockersRepository lockersRepository;
+    private final LockersRepository lockersRepository;
 
     public LockerPickUpService(LockersRepository lockersRepository) {
         this.lockersRepository = lockersRepository;
