@@ -88,18 +88,23 @@ public class LockerService {
         String code = generatePickupCode();
         String codeHash = pickupCodeHasher.hash(shipmentId, lockerId, code);
 
-        lockerPickUpService.saveLocker(shipmentId.toString(), lockerId, codeHash);
+        Locker locker = lockerPickUpService.saveLocker(shipmentId.toString(), lockerId, codeHash);
 
-        ReadyForPickup readyForPickup = new ReadyForPickup();
-        readyForPickup.setLockerId(lockerId);
-        readyForPickup.setShipmentId(shipmentId);
-        readyForPickup.setEventId(UUID.randomUUID());
-        readyForPickup.setTs(Instant.now());
-        readyForPickup.setPickupCode(code);
+        // todo transactional method
+        if (locker != null) {
+            ReadyForPickup readyForPickup = new ReadyForPickup();
+            readyForPickup.setLockerId(lockerId);
+            readyForPickup.setShipmentId(shipmentId);
+            readyForPickup.setEventId(UUID.randomUUID());
+            readyForPickup.setTs(Instant.now());
+            readyForPickup.setPickupCode(code);
 
-        shipmentEventPublisher.sendMessage(shipmentId.toString(), readyForPickup);
+            shipmentEventPublisher.sendMessage(shipmentId.toString(), readyForPickup);
 
-        return new ReadyToPickupResponseDto(shipmentId.toString(), ShipmentStatus.READY_FOR_PICKUP, code);
+            return new ReadyToPickupResponseDto(shipmentId.toString(), ShipmentStatus.READY_FOR_PICKUP, code);
+        }
+
+        return null;
     }
 
     // todo it must get also pickup code
