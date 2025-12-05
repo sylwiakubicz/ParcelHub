@@ -16,6 +16,7 @@ public class ShipmentEventPublisher {
     }
 
     public void sendMessage(String key, SpecificRecord msg) {
+        // todo oczekiwanie na poprawny response i obsluga bledow
         kafkaTemplate.send(kafkaProperties.getShipmentEvents(), key, msg);
     }
 }
