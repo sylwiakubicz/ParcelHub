@@ -1,6 +1,7 @@
 package com.parcelhub.locker_gateway.service;
 
 import com.parcelhub.locker_gateway.client.HttpTrackingClient;
+import com.parcelhub.locker_gateway.dto.ReadyToPickupResponseDto;
 import com.parcelhub.locker_gateway.dto.ResponseDto;
 import com.parcelhub.locker_gateway.dto.ShipmentInfo;
 import com.parcelhub.locker_gateway.dto.ShipmentStatus;
@@ -12,6 +13,7 @@ import com.parcelhub.locker_gateway.security.PickupCodeHasher;
 import com.parcelhub.shipment.DeliveredToLocker;
 import com.parcelhub.shipment.DropOffRegistered;
 import com.parcelhub.shipment.PickupConfirmed;
+import com.parcelhub.shipment.ReadyForPickup;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -76,12 +78,27 @@ public class LockerService {
         shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), deliveredToLocker);
 
         return createResponseDto(shipmentId, ShipmentStatus.DELIVERED_TO_LOCKER);
-
-        // todo tutaj zmiana na readytopickup
-        // todo przesyłanie kodu odbioru do bazy
-
     }
 
+    public ReadyToPickupResponseDto readyToPickup(String lockerId, UUID shipmentId) {
+        String code = generatePickupCode();
+        String codeHash = pickupCodeHasher.hash(shipmentId, lockerId, code);
+
+        // todo przesyłanie kodu odbioru do bazy
+
+        ReadyForPickup readyForPickup = new ReadyForPickup();
+        readyForPickup.setLockerId(lockerId);
+        readyForPickup.setShipmentId(shipmentId);
+        readyForPickup.setEventId(UUID.randomUUID());
+        readyForPickup.setTs(Instant.now());
+        readyForPickup.setPickupCode(code);
+
+        shipmentEventPublisher.sendMessage(shipmentId.toString(), readyForPickup);
+
+        return new ReadyToPickupResponseDto(shipmentId.toString(), ShipmentStatus.READY_FOR_PICKUP, code);
+    }
+
+    // todo it must get also pickup code
     public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId) {
         ShipmentInfo info = getShipmentInfo(shipmentId.toString());
 
