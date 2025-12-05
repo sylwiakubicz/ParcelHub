@@ -17,7 +17,7 @@ public class LockerPickUpService {
         this.lockersRepository = lockersRepository;
     }
 
-    public Locker saveLocker(String shipmentId, String lockerId, String pickupCodeHash) {
+    public void saveLocker(String shipmentId, String lockerId, String pickupCodeHash) {
         Locker locker = new Locker();
         locker.setLockerId(lockerId);
         locker.setShipmentId(UUID.fromString(shipmentId));
@@ -27,12 +27,19 @@ public class LockerPickUpService {
         locker.setPickupCodeHash(pickupCodeHash);
         locker.setId(UUID.randomUUID());
 
-        return lockersRepository.save(locker);
+        lockersRepository.save(locker);
     }
 
     public String getPickupCodeHash(String shipmentId, String lockerId) {
         Locker locker = lockersRepository.findByShipmentIdAndLockerId(UUID.fromString(shipmentId), lockerId)
                 .orElseThrow(() -> new ShipmentNotFoundException(shipmentId));
         return locker.getPickupCodeHash();
+    }
+
+    public void updateLocker(String shipmentId, String lockerId) {
+        Locker locker = lockersRepository.findByShipmentIdAndLockerId(UUID.fromString(shipmentId), lockerId)
+                .orElseThrow(() -> new ShipmentNotFoundException(shipmentId));
+        locker.setUsedAt(Instant.now());
+        lockersRepository.save(locker);
     }
 }
