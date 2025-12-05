@@ -5,10 +5,7 @@ import com.parcelhub.locker_gateway.dto.ReadyToPickupResponseDto;
 import com.parcelhub.locker_gateway.dto.ResponseDto;
 import com.parcelhub.locker_gateway.dto.ShipmentInfo;
 import com.parcelhub.locker_gateway.dto.ShipmentStatus;
-import com.parcelhub.locker_gateway.exception.InvalidLockerId;
-import com.parcelhub.locker_gateway.exception.InvalidPickupCodeException;
-import com.parcelhub.locker_gateway.exception.NotReadyToPickUp;
-import com.parcelhub.locker_gateway.exception.ShipmentNotFoundException;
+import com.parcelhub.locker_gateway.exception.*;
 import com.parcelhub.locker_gateway.kafka.publisher.ShipmentEventPublisher;
 import com.parcelhub.locker_gateway.model.Locker;
 import com.parcelhub.locker_gateway.security.PickupCodeHasher;
@@ -17,6 +14,7 @@ import com.parcelhub.shipment.DropOffRegistered;
 import com.parcelhub.shipment.PickupConfirmed;
 import com.parcelhub.shipment.ReadyForPickup;
 import jakarta.transaction.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -89,26 +87,30 @@ public class LockerService {
 
     @Transactional
     public ReadyToPickupResponseDto readyToPickup(String lockerId, UUID shipmentId) {
-        String code = generatePickupCode();
-        String codeHash = pickupCodeHasher.hash(shipmentId, lockerId, code);
+        try {
+            String code = generatePickupCode();
+            String codeHash = pickupCodeHasher.hash(shipmentId, lockerId, code);
 
-        lockerPickUpService.saveLocker(shipmentId.toString(), lockerId, codeHash);
+            lockerPickUpService.saveLocker(shipmentId.toString(), lockerId, codeHash);
 
-        ReadyForPickup readyForPickup = new ReadyForPickup();
-        readyForPickup.setLockerId(lockerId);
-        readyForPickup.setShipmentId(shipmentId);
-        readyForPickup.setEventId(UUID.randomUUID());
-        readyForPickup.setTs(Instant.now());
-        readyForPickup.setPickupCode(code);
+            ReadyForPickup readyForPickup = new ReadyForPickup();
+            readyForPickup.setLockerId(lockerId);
+            readyForPickup.setShipmentId(shipmentId);
+            readyForPickup.setEventId(UUID.randomUUID());
+            readyForPickup.setTs(Instant.now());
+            readyForPickup.setPickupCode(code);
 
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                shipmentEventPublisher.sendMessage(shipmentId.toString(), readyForPickup);
-            }
-        });
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    shipmentEventPublisher.sendMessage(shipmentId.toString(), readyForPickup);
+                }
+            });
 
-        return new ReadyToPickupResponseDto(shipmentId.toString(), ShipmentStatus.READY_FOR_PICKUP, code);
+            return new ReadyToPickupResponseDto(shipmentId.toString(), ShipmentStatus.READY_FOR_PICKUP, code);
+        } catch (DataIntegrityViolationException e) {
+            throw new LockerNotAvailableException("Locker " + lockerId + " is not available");
+        }
     }
 
     public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId, String pickupCode) {
