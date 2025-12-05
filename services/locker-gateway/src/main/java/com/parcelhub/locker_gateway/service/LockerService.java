@@ -9,6 +9,8 @@ import com.parcelhub.locker_gateway.exception.InvalidLockerId;
 import com.parcelhub.locker_gateway.exception.NotReadyToPickUp;
 import com.parcelhub.locker_gateway.exception.ShipmentNotFoundException;
 import com.parcelhub.locker_gateway.kafka.publisher.ShipmentEventPublisher;
+import com.parcelhub.locker_gateway.model.Locker;
+import com.parcelhub.locker_gateway.repository.LockersRepository;
 import com.parcelhub.locker_gateway.security.PickupCodeHasher;
 import com.parcelhub.shipment.DeliveredToLocker;
 import com.parcelhub.shipment.DropOffRegistered;
@@ -26,12 +28,14 @@ public class LockerService {
     private final ShipmentEventPublisher shipmentEventPublisher;
     private final HttpTrackingClient httpTrackingClient;
     private final PickupCodeHasher pickupCodeHasher;
+    private final LockerPickUpService lockerPickUpService;
 
     public LockerService(ShipmentEventPublisher shipmentEventPublisher, HttpTrackingClient httpTrackingClient,
-                         PickupCodeHasher pickupCodeHasher) {
+                         PickupCodeHasher pickupCodeHasher, LockerPickUpService lockerPickUpService) {
         this.shipmentEventPublisher = shipmentEventPublisher;
         this.httpTrackingClient = httpTrackingClient;
         this.pickupCodeHasher = pickupCodeHasher;
+        this.lockerPickUpService = lockerPickUpService;
     }
 
     public ResponseDto createResponseDto(UUID shipmentId, ShipmentStatus status) {
@@ -84,7 +88,7 @@ public class LockerService {
         String code = generatePickupCode();
         String codeHash = pickupCodeHasher.hash(shipmentId, lockerId, code);
 
-        // todo przesyłanie kodu odbioru do bazy
+        lockerPickUpService.saveLocker(shipmentId.toString(), lockerId, codeHash);
 
         ReadyForPickup readyForPickup = new ReadyForPickup();
         readyForPickup.setLockerId(lockerId);
