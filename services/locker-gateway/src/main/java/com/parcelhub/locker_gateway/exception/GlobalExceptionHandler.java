@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleNotReadyToPickUp(NotReadyToPickUp e) {
         ApiError error = new ApiError(
                 "NOT_READY_FOR_PICKUP",
-                e.getMessage()  // np. "Shipment 123 is not ready for pickup"
+                e.getMessage()
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleInvalidPickupCodeException(InvalidPickupCodeException e) {
         ApiError error = new ApiError(
                 "INVALID_PICKUP_CODE",
-                e.getMessage()  // np. "Wrong pickup code"
+                e.getMessage()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
