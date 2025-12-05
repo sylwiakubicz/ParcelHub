@@ -33,9 +33,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(503).body(e.getMessage());
     }
 
-    @ExceptionHandler(LockerNotAvailableException.class)
-    public ResponseEntity<?> handleLockerNotAvailableException(LockerNotAvailableException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e);
+    @ExceptionHandler(ReadyToPickupProcessingException.class)
+    public ResponseEntity<?> handleReadyToPickupFailed(ReadyToPickupProcessingException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiError(
+                        "READY_TO_PICKUP_FAILED",
+                        "Nie udało się przygotować przesyłki do odbioru. Spróbuj ponownie później."
+                ));
     }
 
     @ExceptionHandler(Exception.class)
