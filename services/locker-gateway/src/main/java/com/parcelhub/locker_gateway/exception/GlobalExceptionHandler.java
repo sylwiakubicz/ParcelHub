@@ -1,5 +1,6 @@
 package com.parcelhub.locker_gateway.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -34,6 +35,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(LockerNotAvailableException.class)
     public ResponseEntity<?> handleLockerNotAvailableException(LockerNotAvailableException e) {
-        return ResponseEntity.status(503).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleGeneric(Exception ex) {
+        ApiError error = new ApiError("INTERNAL_ERROR", "Unexpected error occurred");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }
