@@ -7,7 +7,6 @@ import com.parcelhub.locker_gateway.dto.ShipmentInfo;
 import com.parcelhub.locker_gateway.dto.ShipmentStatus;
 import com.parcelhub.locker_gateway.exception.*;
 import com.parcelhub.locker_gateway.kafka.publisher.ShipmentEventPublisher;
-import com.parcelhub.locker_gateway.model.Locker;
 import com.parcelhub.locker_gateway.security.PickupCodeHasher;
 import com.parcelhub.shipment.DeliveredToLocker;
 import com.parcelhub.shipment.DropOffRegistered;
@@ -109,37 +108,47 @@ public class LockerService {
 
             return new ReadyToPickupResponseDto(shipmentId.toString(), ShipmentStatus.READY_FOR_PICKUP, code);
         } catch (DataIntegrityViolationException e) {
-            throw new LockerNotAvailableException("Locker " + lockerId + " is not available");
+            throw new ReadyToPickupProcessingException("There were some issue with setting shipment to ready to pickup");
         }
     }
 
+    @Transactional
     public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId, String pickupCode) {
-        ShipmentInfo info = getShipmentInfo(shipmentId.toString());
+        try {
+            ShipmentInfo info = getShipmentInfo(shipmentId.toString());
 
-        if (info.getStatus() != ShipmentStatus.READY_FOR_PICKUP) {
-            throw new NotReadyToPickUp(shipmentId.toString());
+            if (info.getStatus() != ShipmentStatus.READY_FOR_PICKUP) {
+                throw new NotReadyToPickUp(shipmentId.toString());
+            }
+
+            if (!Objects.equals(info.getDestinationLockerId(), lockerId)) {
+                throw new InvalidLockerId(lockerId);
+            }
+
+            String givenPickupCodeHash = pickupCodeHasher.hash(shipmentId, lockerId, pickupCode);
+            String actualPickupCodeHash = lockerPickUpService.getPickupCodeHash(shipmentId.toString(), lockerId);
+            if (!Objects.equals(actualPickupCodeHash, givenPickupCodeHash)) {
+                throw new InvalidPickupCodeException("Wrong Pickup Code");
+            }
+
+            PickupConfirmed pickupConfirmed = new PickupConfirmed();
+            pickupConfirmed.setShipmentId(shipmentId);
+            pickupConfirmed.setEventId(UUID.randomUUID());
+            pickupConfirmed.setTs(Instant.now());
+            pickupConfirmed.setLockerId(lockerId);
+
+            lockerPickUpService.updateLocker(shipmentId.toString(), lockerId);
+
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), pickupConfirmed);
+                }
+            });
+
+            return createResponseDto(shipmentId, ShipmentStatus.PICKED_UP);
+        } catch (DataIntegrityViolationException e) {
+            throw new ReadyToPickupProcessingException("There were some issue with setting shipment to ready to pickup");
         }
-
-        if (!Objects.equals(info.getDestinationLockerId(), lockerId)) {
-            throw new InvalidLockerId(lockerId);
-        }
-
-        String givenPickupCodeHash = pickupCodeHasher.hash(shipmentId, lockerId, pickupCode);
-        String actualPickupCodeHash = lockerPickUpService.getPickupCodeHash(shipmentId.toString(), lockerId);
-        if (!Objects.equals(actualPickupCodeHash, givenPickupCodeHash)) {
-            throw new InvalidPickupCodeException("Wrong Pickup Code");
-        }
-
-        PickupConfirmed pickupConfirmed = new PickupConfirmed();
-        pickupConfirmed.setShipmentId(shipmentId);
-        pickupConfirmed.setEventId(UUID.randomUUID());
-        pickupConfirmed.setTs(Instant.now());
-        pickupConfirmed.setLockerId(lockerId);
-
-        // todo update in db - already picked up
-
-        shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), pickupConfirmed);
-
-        return createResponseDto(shipmentId, ShipmentStatus.PICKED_UP);
     }
 }
