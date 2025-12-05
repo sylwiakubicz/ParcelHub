@@ -12,6 +12,7 @@ import java.util.UUID;
 public class LockerPickUpService {
 
     private final LockersRepository lockersRepository;
+    private static final long PICKUP_VALIDITY_SECONDS = 172800L; // 2 days
 
     public LockerPickUpService(LockersRepository lockersRepository) {
         this.lockersRepository = lockersRepository;
@@ -22,8 +23,7 @@ public class LockerPickUpService {
         locker.setLockerId(lockerId);
         locker.setShipmentId(UUID.fromString(shipmentId));
         locker.setGeneratedAt(Instant.now());
-        // valid for two days (172800s)
-        locker.setExpiresAt(Instant.now().plusSeconds(172800));
+        locker.setExpiresAt(Instant.now().plusSeconds(PICKUP_VALIDITY_SECONDS));
         locker.setPickupCodeHash(pickupCodeHash);
         locker.setId(UUID.randomUUID());
 
