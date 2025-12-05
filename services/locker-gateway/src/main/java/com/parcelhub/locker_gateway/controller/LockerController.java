@@ -34,8 +34,10 @@ public class LockerController {
     public void deliver(@PathVariable("lockerId") String lockerId, @PathVariable UUID shipmentId) {}
 
     @PostMapping("/{lockerId}/shipments/{shipmentId}/pickup")
-    public ResponseEntity<ResponseDto> pickup(@PathVariable("lockerId") String lockerId, @PathVariable UUID shipmentId) {
-        ResponseDto responseDto = lockerService.pickupConfirmed(shipmentId, lockerId);
+    public ResponseEntity<ResponseDto> pickup(@PathVariable("lockerId") String lockerId, @PathVariable UUID shipmentId,
+                                              @RequestBody String pickupCode) {
+        // todo walidacja kodu wstępna (6 cyfr)
+        ResponseDto responseDto = lockerService.pickupConfirmed(shipmentId, lockerId, pickupCode);
         return ResponseEntity.ok(responseDto);
     }
 }

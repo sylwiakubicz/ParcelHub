@@ -99,7 +99,7 @@ public class LockerService {
     }
 
     // todo it must get also pickup code
-    public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId) {
+    public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId, String pickupCode) {
         ShipmentInfo info = getShipmentInfo(shipmentId.toString());
 
         if (info.getStatus() != ShipmentStatus.READY_FOR_PICKUP) {
@@ -111,6 +111,8 @@ public class LockerService {
         }
 
         // todo walidacja kodu odbioru
+        String pickupCodeHash = pickupCodeHasher.hash(shipmentId, lockerId, pickupCode);
+
 
         PickupConfirmed pickupConfirmed = new PickupConfirmed();
         pickupConfirmed.setShipmentId(shipmentId);
