@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException e) {
-        ApiError error = new ApiError("DATA_INTEGRITY_VIOLATION", "Invalid data state");
+        ApiError error = new ApiError("DATA_INTEGRITY_VIOLATION", "Invalid data state " + e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 }
