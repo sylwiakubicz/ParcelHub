@@ -38,7 +38,7 @@ public class LockerService {
         this.lockerPickUpService = lockerPickUpService;
     }
 
-    public ResponseDto createResponseDto(UUID shipmentId, ShipmentStatus status) {
+    private ResponseDto createResponseDto(UUID shipmentId, ShipmentStatus status) {
         return new ResponseDto(shipmentId.toString(), status);
     }
 
