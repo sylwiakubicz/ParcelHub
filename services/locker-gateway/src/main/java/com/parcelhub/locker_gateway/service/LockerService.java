@@ -86,69 +86,61 @@ public class LockerService {
 
     @Transactional
     public ReadyToPickupResponseDto readyToPickup(String lockerId, UUID shipmentId) {
-        try {
-            String code = generatePickupCode();
-            String codeHash = pickupCodeHasher.hash(shipmentId, lockerId, code);
+        String code = generatePickupCode();
+        String codeHash = pickupCodeHasher.hash(shipmentId, lockerId, code);
 
-            lockerPickUpService.saveLocker(shipmentId, lockerId, codeHash);
+        lockerPickUpService.saveLocker(shipmentId, lockerId, codeHash);
 
-            ReadyForPickup readyForPickup = new ReadyForPickup();
-            readyForPickup.setLockerId(lockerId);
-            readyForPickup.setShipmentId(shipmentId);
-            readyForPickup.setEventId(UUID.randomUUID());
-            readyForPickup.setTs(Instant.now());
-            readyForPickup.setPickupCode(code);
+        ReadyForPickup readyForPickup = new ReadyForPickup();
+        readyForPickup.setLockerId(lockerId);
+        readyForPickup.setShipmentId(shipmentId);
+        readyForPickup.setEventId(UUID.randomUUID());
+        readyForPickup.setTs(Instant.now());
+        readyForPickup.setPickupCode(code);
 
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    shipmentEventPublisher.sendMessage(shipmentId.toString(), readyForPickup);
-                }
-            });
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                shipmentEventPublisher.sendMessage(shipmentId.toString(), readyForPickup);
+            }
+        });
 
-            return new ReadyToPickupResponseDto(shipmentId.toString(), ShipmentStatus.READY_FOR_PICKUP, code);
-        } catch (DataIntegrityViolationException e) {
-            throw new ReadyToPickupProcessingException("There were some issue with setting shipment to ready to pickup");
-        }
+        return new ReadyToPickupResponseDto(shipmentId.toString(), ShipmentStatus.READY_FOR_PICKUP, code);
     }
 
     @Transactional
     public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId, String pickupCode) {
-        try {
-            ShipmentInfo info = getShipmentInfo(shipmentId.toString());
+        ShipmentInfo info = getShipmentInfo(shipmentId.toString());
 
-            if (info.getStatus() != ShipmentStatus.READY_FOR_PICKUP) {
-                throw new NotReadyToPickUp(shipmentId.toString());
-            }
-
-            if (!Objects.equals(info.getDestinationLockerId(), lockerId)) {
-                throw new InvalidLockerId(lockerId);
-            }
-
-            String givenPickupCodeHash = pickupCodeHasher.hash(shipmentId, lockerId, pickupCode);
-            String actualPickupCodeHash = lockerPickUpService.getPickupCodeHash(shipmentId, lockerId);
-            if (!Objects.equals(actualPickupCodeHash, givenPickupCodeHash)) {
-                throw new InvalidPickupCodeException("Wrong Pickup Code");
-            }
-
-            PickupConfirmed pickupConfirmed = new PickupConfirmed();
-            pickupConfirmed.setShipmentId(shipmentId);
-            pickupConfirmed.setEventId(UUID.randomUUID());
-            pickupConfirmed.setTs(Instant.now());
-            pickupConfirmed.setLockerId(lockerId);
-
-            lockerPickUpService.updateLocker(shipmentId, lockerId);
-
-            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-                @Override
-                public void afterCommit() {
-                    shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), pickupConfirmed);
-                }
-            });
-
-            return createResponseDto(shipmentId, ShipmentStatus.PICKED_UP);
-        } catch (DataIntegrityViolationException e) {
-            throw new ReadyToPickupProcessingException("There were some issue with setting shipment to ready to pickup");
+        if (info.getStatus() != ShipmentStatus.READY_FOR_PICKUP) {
+            throw new NotReadyToPickUp(shipmentId.toString());
         }
+
+        if (!Objects.equals(info.getDestinationLockerId(), lockerId)) {
+            throw new InvalidLockerId(lockerId);
+        }
+
+        String givenPickupCodeHash = pickupCodeHasher.hash(shipmentId, lockerId, pickupCode);
+        String actualPickupCodeHash = lockerPickUpService.getPickupCodeHash(shipmentId, lockerId);
+        if (!Objects.equals(actualPickupCodeHash, givenPickupCodeHash)) {
+            throw new InvalidPickupCodeException("Wrong Pickup Code");
+        }
+
+        PickupConfirmed pickupConfirmed = new PickupConfirmed();
+        pickupConfirmed.setShipmentId(shipmentId);
+        pickupConfirmed.setEventId(UUID.randomUUID());
+        pickupConfirmed.setTs(Instant.now());
+        pickupConfirmed.setLockerId(lockerId);
+
+        lockerPickUpService.updateLocker(shipmentId, lockerId);
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), pickupConfirmed);
+            }
+        });
+
+        return createResponseDto(shipmentId, ShipmentStatus.PICKED_UP);
     }
 }

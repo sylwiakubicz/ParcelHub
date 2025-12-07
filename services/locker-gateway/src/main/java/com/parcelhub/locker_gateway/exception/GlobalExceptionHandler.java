@@ -1,5 +1,6 @@
 package com.parcelhub.locker_gateway.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -66,5 +67,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleGeneric(Exception ex) {
         ApiError error = new ApiError("INTERNAL_ERROR", "Unexpected error occurred");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException e) {
+        ApiError error = new ApiError("DATA_INTEGRITY_VIOLATION", "Invalid data state");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 }
