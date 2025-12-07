@@ -65,7 +65,7 @@ public class LockerService {
         return createResponseDto(shipmentId, ShipmentStatus.DROPPED_OFF_AT_LOCKER);
     }
 
-    public ResponseDto deliveredToLocker(UUID shipmentId, String lockerId) {
+    public void deliveredToLocker(UUID shipmentId, String lockerId) {
         ShipmentInfo info = getShipmentInfo(shipmentId.toString());
 
         if (!Objects.equals(info.getDestinationLockerId(), lockerId)) {
@@ -79,8 +79,6 @@ public class LockerService {
         deliveredToLocker.setLockerId(lockerId);
 
         shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), deliveredToLocker);
-
-        return createResponseDto(shipmentId, ShipmentStatus.DELIVERED_TO_LOCKER);
     }
 
     @Transactional
