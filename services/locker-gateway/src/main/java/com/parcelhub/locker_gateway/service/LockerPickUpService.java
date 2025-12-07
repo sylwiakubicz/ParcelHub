@@ -25,7 +25,6 @@ public class LockerPickUpService {
 
     public void saveLocker(UUID shipmentId, String lockerId, String pickupCodeHash) {
 
-        // TODO czy potrzbne sprawdzanie że w bazie nie ma wpisu dla niego?
         Locker locker = new Locker();
         locker.setLockerId(lockerId);
         locker.setShipmentId(shipmentId);

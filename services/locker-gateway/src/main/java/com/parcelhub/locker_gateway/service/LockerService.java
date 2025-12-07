@@ -12,7 +12,6 @@ import com.parcelhub.shipment.DeliveredToLocker;
 import com.parcelhub.shipment.DropOffRegistered;
 import com.parcelhub.shipment.PickupConfirmed;
 import com.parcelhub.shipment.ReadyForPickup;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
