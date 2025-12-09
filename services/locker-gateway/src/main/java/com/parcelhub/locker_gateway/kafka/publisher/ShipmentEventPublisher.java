@@ -2,12 +2,18 @@ package com.parcelhub.locker_gateway.kafka.publisher;
 
 import com.parcelhub.locker_gateway.kafka.config.KafkaProperties;
 import org.apache.avro.specific.SpecificRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -21,9 +27,22 @@ public class ShipmentEventPublisher {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendMessage(String key, SpecificRecord msg) {
+    public void sendMessage(String key, SpecificRecord msg, Map<String, String> headers) {
+
+        List<Header> kafkaHeaders = headers.entrySet().stream()
+                .filter(e -> e.getValue() != null)
+                .map(e -> (Header) new RecordHeader(
+                        e.getKey(),
+                        e.getValue().getBytes(StandardCharsets.UTF_8)) {
+                } )
+                .toList();
+
+
+        ProducerRecord<String, SpecificRecord> record =
+                new ProducerRecord<>(kafkaProperties.getShipmentEvents(), null, key, msg, kafkaHeaders);
+
         CompletableFuture<SendResult<String, SpecificRecord>> future =
-                kafkaTemplate.send(kafkaProperties.getShipmentEvents(), key, msg);
+                kafkaTemplate.send(record);
         future.whenComplete((r, e) -> {
             if (e == null) {
                 logger.info("Message sent successfully {}", key);

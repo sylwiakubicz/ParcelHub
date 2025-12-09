@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
@@ -51,7 +52,7 @@ public class LockerService {
         return Integer.toString(i);
     }
 
-    public ResponseDto dropOff(String lockerId, UUID shipmentId) {
+    public ResponseDto dropOff(String lockerId, UUID shipmentId, String traceId, String correlationId)  {
         getShipmentInfo(shipmentId.toString());
 
         DropOffRegistered dropOffRegistered = new DropOffRegistered();
@@ -60,12 +61,19 @@ public class LockerService {
         dropOffRegistered.setEventId(UUID.randomUUID());
         dropOffRegistered.setTs(Instant.now());
 
-        shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), dropOffRegistered);
+        shipmentEventPublisher.sendMessage(
+                String.valueOf(shipmentId),
+                dropOffRegistered,
+                Map.of(
+                "traceId", traceId,
+                "correlationId", correlationId,
+                "source", "locker-gateway"
+        ));
 
         return createResponseDto(shipmentId, ShipmentStatus.DROPPED_OFF_AT_LOCKER);
     }
 
-    public void deliveredToLocker(UUID shipmentId, String lockerId) {
+    public void deliveredToLocker(UUID shipmentId, String lockerId, String traceId, String correlationId) {
         ShipmentInfo info = getShipmentInfo(shipmentId.toString());
 
         if (!Objects.equals(info.getDestinationLockerId(), lockerId)) {
@@ -78,11 +86,19 @@ public class LockerService {
         deliveredToLocker.setTs(Instant.now());
         deliveredToLocker.setLockerId(lockerId);
 
-        shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), deliveredToLocker);
+        shipmentEventPublisher.sendMessage(
+                String.valueOf(shipmentId),
+                deliveredToLocker,
+                Map.of(
+                        "traceId", traceId,
+                        "correlationId", correlationId,
+                        "source", "locker-gateway"
+                ));
     }
 
     @Transactional
-    public ReadyToPickupResponseDto readyToPickup(String lockerId, UUID shipmentId) {
+    public ReadyToPickupResponseDto readyToPickup(String lockerId, UUID shipmentId,
+                                                  String traceId, String correlationId) {
         String code = generatePickupCode();
         String codeHash = pickupCodeHasher.hash(shipmentId, lockerId, code);
 
@@ -98,7 +114,14 @@ public class LockerService {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                shipmentEventPublisher.sendMessage(shipmentId.toString(), readyForPickup);
+                shipmentEventPublisher.sendMessage(
+                        shipmentId.toString(),
+                        readyForPickup,
+                        Map.of(
+                                "traceId", traceId,
+                                "correlationId", correlationId,
+                                "source", "locker-gateway"
+                        ));
             }
         });
 
@@ -106,7 +129,8 @@ public class LockerService {
     }
 
     @Transactional
-    public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId, String pickupCode) {
+    public ResponseDto pickupConfirmed(UUID shipmentId, String lockerId, String pickupCode,
+                                       String traceId, String correlationId) {
         ShipmentInfo info = getShipmentInfo(shipmentId.toString());
 
         if (info.getStatus() != ShipmentStatus.READY_FOR_PICKUP) {
@@ -134,7 +158,14 @@ public class LockerService {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                shipmentEventPublisher.sendMessage(String.valueOf(shipmentId), pickupConfirmed);
+                shipmentEventPublisher.sendMessage(
+                        String.valueOf(shipmentId),
+                        pickupConfirmed,
+                        Map.of(
+                                "traceId", traceId,
+                                "correlationId", correlationId,
+                                "source", "locker-gateway"
+                        ));
             }
         });
 

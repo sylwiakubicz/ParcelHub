@@ -27,22 +27,31 @@ public class LockerController {
     }
 
     @PostMapping("/{lockerId}/shipments/{shipmentId}/drop-off")
-    public ResponseEntity<ResponseDto> dropOff(@PathVariable("lockerId") String lockerId, @PathVariable UUID shipmentId) {
-        ResponseDto responseDto = lockerService.dropOff(lockerId, shipmentId);
+    public ResponseEntity<ResponseDto> dropOff(@PathVariable("lockerId") String lockerId,
+                                               @PathVariable UUID shipmentId,
+                                               @RequestHeader(value = "traceId", required = false) String traceId,
+                                               @RequestHeader(value = "correlationId", required = false) String correlationId) {
+        ResponseDto responseDto = lockerService.dropOff(lockerId, shipmentId, traceId, correlationId);
         return ResponseEntity.ok(responseDto);
     }
 
     @PostMapping("/{lockerId}/shipments/{shipmentId}/deliver")
-    public ResponseEntity<ReadyToPickupResponseDto> deliver(@PathVariable("lockerId") String lockerId, @PathVariable UUID shipmentId) {
-        lockerService.deliveredToLocker(shipmentId, lockerId);
-        ReadyToPickupResponseDto readyToPickupResponseDto = lockerService.readyToPickup(lockerId, shipmentId);
+    public ResponseEntity<ReadyToPickupResponseDto> deliver(@PathVariable("lockerId") String lockerId,
+                                                            @PathVariable UUID shipmentId,
+                                                            @RequestHeader(value = "traceId", required = false) String traceId,
+                                                            @RequestHeader(value = "correlationId", required = false) String correlationId) {
+        lockerService.deliveredToLocker(shipmentId, lockerId, traceId, correlationId);
+        ReadyToPickupResponseDto readyToPickupResponseDto = lockerService.readyToPickup(lockerId, shipmentId, traceId, correlationId);
         return ResponseEntity.ok(readyToPickupResponseDto);
     }
 
     @PostMapping("/{lockerId}/shipments/{shipmentId}/pickup")
-    public ResponseEntity<ResponseDto> pickup(@PathVariable("lockerId") String lockerId, @PathVariable UUID shipmentId,
-                                              @RequestBody PickupRequest request) {
-        ResponseDto responseDto = lockerService.pickupConfirmed(shipmentId, lockerId, request.pickupCode());
+    public ResponseEntity<ResponseDto> pickup(@PathVariable("lockerId") String lockerId,
+                                              @PathVariable UUID shipmentId,
+                                              @RequestBody PickupRequest request,
+                                              @RequestHeader(value = "traceId", required = false) String traceId,
+                                              @RequestHeader(value = "correlationId", required = false) String correlationId) {
+        ResponseDto responseDto = lockerService.pickupConfirmed(shipmentId, lockerId, request.pickupCode(), traceId, correlationId);
         return ResponseEntity.ok(responseDto);
     }
 }
