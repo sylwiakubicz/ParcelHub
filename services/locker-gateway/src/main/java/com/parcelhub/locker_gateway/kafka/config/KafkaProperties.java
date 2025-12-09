@@ -15,6 +15,9 @@ public class KafkaProperties {
     @Value("${topics.shipment-events}")
     private String shipmentEvents;
 
+    @Value("${topics.scan-events}")
+    private String scanEvents;
+
     public String getBootstrapServers() {
         return bootstrapServers;
     }
@@ -37,5 +40,13 @@ public class KafkaProperties {
 
     public void setShipmentEvents(String shipmentEvents) {
         this.shipmentEvents = shipmentEvents;
+    }
+
+    public String getScanEvents() {
+        return scanEvents;
+    }
+
+    public void setScanEvents(String scanEvents) {
+        this.scanEvents = scanEvents;
     }
 }
