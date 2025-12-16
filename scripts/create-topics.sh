@@ -45,6 +45,7 @@ create_topic connect-status 6 3 compact ""
 create_topic tracking-updates 12 3 delete 1209600000
 create_topic shipment-tracking 12 3 compact ""
 create_topic scan-events.locker 12 2 delete 1209600000
+create_topic scan-events.hub 12 2 delete 1209600000
 
 
 echo "✅ Topiki utworzone."
