@@ -44,7 +44,7 @@ services:
       - tracking-state:/var/lib/kafka-streams/state
 
   locker-gateway:
-    image: sylwiakubicz/locker:0.1.0
+    image: sylwiakubicz/locker-gateway:0.1.0
     ports:
       - "8082:8082"
     container_name: locker-gateway
