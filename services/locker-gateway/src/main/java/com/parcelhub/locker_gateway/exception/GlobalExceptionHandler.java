@@ -63,12 +63,6 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGeneric(Exception ex) {
-        ApiError error = new ApiError("INTERNAL_ERROR", "Unexpected error occurred");
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
-
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleDataIntegrity(DataIntegrityViolationException e) {
         ApiError error = new ApiError("DATA_INTEGRITY_VIOLATION", "Invalid data state " + e.getMessage());
