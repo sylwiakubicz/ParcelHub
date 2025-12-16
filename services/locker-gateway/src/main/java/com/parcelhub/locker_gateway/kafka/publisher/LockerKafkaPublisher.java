@@ -17,17 +17,25 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-public class ShipmentEventPublisher {
+public class LockerKafkaPublisher {
     private final KafkaProperties kafkaProperties;
     private final KafkaTemplate<String, SpecificRecord> kafkaTemplate;
-    private Logger logger = LoggerFactory.getLogger(ShipmentEventPublisher.class);
+    private Logger logger = LoggerFactory.getLogger(LockerKafkaPublisher.class);
 
-    public ShipmentEventPublisher(KafkaProperties kafkaProperties, KafkaTemplate<String, SpecificRecord> kafkaTemplate) {
+    public LockerKafkaPublisher(KafkaProperties kafkaProperties, KafkaTemplate<String, SpecificRecord> kafkaTemplate) {
         this.kafkaProperties = kafkaProperties;
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendMessage(String key, SpecificRecord msg, Map<String, String> headers) {
+    public void sendShipmentEvent(String key, SpecificRecord msg, Map<String, String> headers) {
+        sendMessage(kafkaProperties.getShipmentEvents(), key, msg, headers );
+    }
+
+    public void sendScanEvent(String key, SpecificRecord msg, Map<String, String> headers) {
+        sendMessage(kafkaProperties.getScanEvents(), key, msg, headers );
+    }
+
+    private void sendMessage(String topic, String key, SpecificRecord msg, Map<String, String> headers) {
 
         List<Header> kafkaHeaders = headers.entrySet().stream()
                 .filter(e -> e.getValue() != null)
@@ -39,7 +47,7 @@ public class ShipmentEventPublisher {
 
 
         ProducerRecord<String, SpecificRecord> record =
-                new ProducerRecord<>(kafkaProperties.getShipmentEvents(), null, key, msg, kafkaHeaders);
+                new ProducerRecord<>(topic, null, key, msg, kafkaHeaders);
 
         CompletableFuture<SendResult<String, SpecificRecord>> future =
                 kafkaTemplate.send(record);

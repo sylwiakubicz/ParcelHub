@@ -6,7 +6,7 @@ import com.parcelhub.locker_gateway.dto.ResponseDto;
 import com.parcelhub.locker_gateway.dto.ShipmentInfo;
 import com.parcelhub.locker_gateway.dto.ShipmentStatus;
 import com.parcelhub.locker_gateway.exception.*;
-import com.parcelhub.locker_gateway.kafka.publisher.ShipmentEventPublisher;
+import com.parcelhub.locker_gateway.kafka.publisher.LockerKafkaPublisher;
 import com.parcelhub.locker_gateway.security.PickupCodeHasher;
 import com.parcelhub.shipment.DeliveredToLocker;
 import com.parcelhub.shipment.DropOffRegistered;
@@ -25,14 +25,14 @@ import java.util.UUID;
 
 @Service
 public class LockerService {
-    private final ShipmentEventPublisher shipmentEventPublisher;
+    private final LockerKafkaPublisher lockerKafkaPublisher;
     private final HttpTrackingClient httpTrackingClient;
     private final PickupCodeHasher pickupCodeHasher;
     private final LockerPickUpService lockerPickUpService;
 
-    public LockerService(ShipmentEventPublisher shipmentEventPublisher, HttpTrackingClient httpTrackingClient,
+    public LockerService(LockerKafkaPublisher lockerKafkaPublisher, HttpTrackingClient httpTrackingClient,
                          PickupCodeHasher pickupCodeHasher, LockerPickUpService lockerPickUpService) {
-        this.shipmentEventPublisher = shipmentEventPublisher;
+        this.lockerKafkaPublisher = lockerKafkaPublisher;
         this.httpTrackingClient = httpTrackingClient;
         this.pickupCodeHasher = pickupCodeHasher;
         this.lockerPickUpService = lockerPickUpService;
@@ -61,7 +61,7 @@ public class LockerService {
         dropOffRegistered.setEventId(UUID.randomUUID());
         dropOffRegistered.setTs(Instant.now());
 
-        shipmentEventPublisher.sendMessage(
+        lockerKafkaPublisher.sendShipmentEvent(
                 String.valueOf(shipmentId),
                 dropOffRegistered,
                 Map.of(
@@ -69,6 +69,15 @@ public class LockerService {
                 "correlationId", correlationId,
                 "source", "locker-gateway"
         ));
+
+        lockerKafkaPublisher.sendScanEvent(
+                String.valueOf(shipmentId),
+                dropOffRegistered,
+                Map.of(
+                        "traceId", traceId,
+                        "correlationId", correlationId,
+                        "source", "locker-gateway"
+                ));
 
         return createResponseDto(shipmentId, ShipmentStatus.DROPPED_OFF_AT_LOCKER);
     }
@@ -86,7 +95,7 @@ public class LockerService {
         deliveredToLocker.setTs(Instant.now());
         deliveredToLocker.setLockerId(lockerId);
 
-        shipmentEventPublisher.sendMessage(
+        lockerKafkaPublisher.sendShipmentEvent(
                 String.valueOf(shipmentId),
                 deliveredToLocker,
                 Map.of(
@@ -94,6 +103,16 @@ public class LockerService {
                         "correlationId", correlationId,
                         "source", "locker-gateway"
                 ));
+
+        lockerKafkaPublisher.sendScanEvent(
+                String.valueOf(shipmentId),
+                deliveredToLocker,
+                Map.of(
+                        "traceId", traceId,
+                        "correlationId", correlationId,
+                        "source", "locker-gateway"
+                )
+        );
     }
 
     @Transactional
@@ -114,7 +133,7 @@ public class LockerService {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                shipmentEventPublisher.sendMessage(
+                lockerKafkaPublisher.sendShipmentEvent(
                         shipmentId.toString(),
                         readyForPickup,
                         Map.of(
@@ -122,6 +141,16 @@ public class LockerService {
                                 "correlationId", correlationId,
                                 "source", "locker-gateway"
                         ));
+
+                lockerKafkaPublisher.sendScanEvent(
+                        shipmentId.toString(),
+                        readyForPickup,
+                        Map.of(
+                                "traceId", traceId,
+                                "correlationId", correlationId,
+                                "source", "locker-gateway"
+                        )
+                );
             }
         });
 
@@ -158,7 +187,16 @@ public class LockerService {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                shipmentEventPublisher.sendMessage(
+                lockerKafkaPublisher.sendShipmentEvent(
+                        String.valueOf(shipmentId),
+                        pickupConfirmed,
+                        Map.of(
+                                "traceId", traceId,
+                                "correlationId", correlationId,
+                                "source", "locker-gateway"
+                        ));
+
+                lockerKafkaPublisher.sendScanEvent(
                         String.valueOf(shipmentId),
                         pickupConfirmed,
                         Map.of(
