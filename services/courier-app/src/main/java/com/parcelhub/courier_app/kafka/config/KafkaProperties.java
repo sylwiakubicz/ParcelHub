@@ -15,8 +15,11 @@ public class KafkaProperties {
     @Value("${topics.shipment-events}")
     private String shipmentEvents;
 
-    @Value("${topics.scan-events}")
-    private String scanEvents;
+    @Value("${topics.scan-events.locker}")
+    private String scanEventsLocker;
+
+    @Value("${topics.scan-events.hub}")
+    private String scanEventsHub;
 
     public String getBootstrapServers() {
         return bootstrapServers;
@@ -42,11 +45,19 @@ public class KafkaProperties {
         this.shipmentEvents = shipmentEvents;
     }
 
-    public String getScanEvents() {
-        return scanEvents;
+    public String getScanEventsLocker() {
+        return scanEventsLocker;
     }
 
-    public void setScanEvents(String scanEvents) {
-        this.scanEvents = scanEvents;
+    public void setScanEventsLocker(String scanEventsLocker) {
+        this.scanEventsLocker = scanEventsLocker;
+    }
+
+    public String getScanEventsHub() {
+        return scanEventsHub;
+    }
+
+    public void setScanEventsHub(String scanEventsHub) {
+        this.scanEventsHub = scanEventsHub;
     }
 }

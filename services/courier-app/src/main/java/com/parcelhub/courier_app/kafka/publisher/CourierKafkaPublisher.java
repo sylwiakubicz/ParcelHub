@@ -32,8 +32,12 @@ public class CourierKafkaPublisher {
         sendMessage(kafkaProperties.getShipmentEvents(), key, msg, headers );
     }
 
-    public void sendScanEvent(String key, SpecificRecord msg, Map<String, String> headers) {
-        sendMessage(kafkaProperties.getScanEvents(), key, msg, headers );
+    public void sendScanEventLocker(String key, SpecificRecord msg, Map<String, String> headers) {
+        sendMessage(kafkaProperties.getScanEventsLocker(), key, msg, headers );
+    }
+
+    public void sendScanEventHub(String key, SpecificRecord msg, Map<String, String> headers) {
+        sendMessage(kafkaProperties.getScanEventsHub(), key, msg, headers );
     }
 
     private void sendMessage(String topic, String key, SpecificRecord msg, Map<String, String> headers) {
