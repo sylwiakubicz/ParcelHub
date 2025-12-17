@@ -62,7 +62,7 @@ services:
       SERVER_PORT: 8082
       TOPIC_SHIPMENT_EVENTS: "shipment-events"
       TOPIC_SCAN_EVENTS_LOCKER: "scan-events.locker"
-      TRACKING_URL: "http://tracking-service:8087/shipments"
+      TRACKING_URL: "http://tracking-service:8085/shipments"
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_db:5432/shipment
       SPRING_DATASOURCE_USERNAME: postgres
     secrets:
