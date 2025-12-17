@@ -19,16 +19,20 @@ public class CourierController {
 
     @PostMapping("{courierId}/collect")
     public ResponseEntity<ResponseDto> collect(@PathVariable String courierId,
-                                               @RequestBody CollectRequestDto collectRequestDto) {
-        courierService.collect(courierId, collectRequestDto.getShipmentId());
+                                               @RequestBody CollectRequestDto collectRequestDto,
+                                               @RequestHeader(value = "traceId", required = false) String traceId,
+                                               @RequestHeader(value = "correlationId", required = false) String correlationId) {
+        courierService.collect(courierId, collectRequestDto, traceId, correlationId);
         return ResponseEntity.ok().body(
                 new ResponseDto(courierId, collectRequestDto.getShipmentId(),"collected from locker"));
     }
 
     @PostMapping("{courierId}/hub-arrival")
     public ResponseEntity<ResponseDto> hubArrival(@PathVariable String courierId,
-                                                  @RequestBody ArrivedAtHubRequestDto arrivedAtHubRequestDto) {
-        courierService.arrivedAtHub(courierId, arrivedAtHubRequestDto.getHubId(), arrivedAtHubRequestDto.getShipmentId());
+                                                  @RequestBody ArrivedAtHubRequestDto arrivedAtHubRequestDto,
+                                                  @RequestHeader(value = "traceId", required = false) String traceId,
+                                                  @RequestHeader(value = "correlationId", required = false) String correlationId) {
+        courierService.arrivedAtHub(courierId, arrivedAtHubRequestDto, traceId, correlationId);
         return ResponseEntity.ok().body(
                 new ResponseDto(courierId, arrivedAtHubRequestDto.getShipmentId() ,"arrived at hub"));
     }
