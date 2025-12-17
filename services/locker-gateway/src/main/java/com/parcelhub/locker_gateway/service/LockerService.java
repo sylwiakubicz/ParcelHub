@@ -67,7 +67,8 @@ public class LockerService {
                 Map.of(
                 "traceId", traceId,
                 "correlationId", correlationId,
-                "source", "locker-gateway"
+                "source", "locker-gateway",
+                "event_type", "drop_off"
         ));
 
         lockerKafkaPublisher.sendScanEvent(
@@ -76,7 +77,8 @@ public class LockerService {
                 Map.of(
                         "traceId", traceId,
                         "correlationId", correlationId,
-                        "source", "locker-gateway"
+                        "source", "locker-gateway",
+                        "event_type", "drop_off"
                 ));
 
         return createResponseDto(shipmentId, ShipmentStatus.DROPPED_OFF_AT_LOCKER);
@@ -101,7 +103,8 @@ public class LockerService {
                 Map.of(
                         "traceId", traceId,
                         "correlationId", correlationId,
-                        "source", "locker-gateway"
+                        "source", "locker-gateway",
+                        "event_type", "delivered_to_locker"
                 ));
 
         lockerKafkaPublisher.sendScanEvent(
@@ -110,7 +113,8 @@ public class LockerService {
                 Map.of(
                         "traceId", traceId,
                         "correlationId", correlationId,
-                        "source", "locker-gateway"
+                        "source", "locker-gateway",
+                        "event_type", "delivered_to_locker"
                 )
         );
     }
@@ -139,7 +143,8 @@ public class LockerService {
                         Map.of(
                                 "traceId", traceId,
                                 "correlationId", correlationId,
-                                "source", "locker-gateway"
+                                "source", "locker-gateway",
+                                "event_type", "ready_for_pickup"
                         ));
 
                 lockerKafkaPublisher.sendScanEvent(
@@ -148,7 +153,8 @@ public class LockerService {
                         Map.of(
                                 "traceId", traceId,
                                 "correlationId", correlationId,
-                                "source", "locker-gateway"
+                                "source", "locker-gateway",
+                                "event_type", "ready_for_pickup"
                         )
                 );
             }
@@ -193,7 +199,8 @@ public class LockerService {
                         Map.of(
                                 "traceId", traceId,
                                 "correlationId", correlationId,
-                                "source", "locker-gateway"
+                                "source", "locker-gateway",
+                                "event_type", "pickup_confirmed"
                         ));
 
                 lockerKafkaPublisher.sendScanEvent(
@@ -202,7 +209,8 @@ public class LockerService {
                         Map.of(
                                 "traceId", traceId,
                                 "correlationId", correlationId,
-                                "source", "locker-gateway"
+                                "source", "locker-gateway",
+                                "event_type", "pickup_confirmed"
                         ));
             }
         });
