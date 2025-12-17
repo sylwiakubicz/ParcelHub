@@ -19,7 +19,7 @@ services:
 
 
   tracking-service:
-    image: sylwiakubicz/tracking:0.2.0
+    image: sylwiakubicz/tracking:0.3.0
     ports:
      - "8085:8085"
     container_name: tracking-service
