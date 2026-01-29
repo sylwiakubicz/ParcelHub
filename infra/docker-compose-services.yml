@@ -69,7 +69,26 @@ services:
       - db_password
       - hash_secret
 
-
+  courier-api:
+    image: sylwiakubicz/courier:0.1.0
+    ports:
+      - "8084:8084"
+    container_name: courier-api
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    environment:
+      APICURIO_URL: "http://apicurio:8080/apis/registry/v2"
+      IQ_HOST: "courier-api"
+      KAFKA_APPLICATION_ID: "parcelhub-courier-app-service"
+      KAFKA_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+      SERVER_PORT: 8084
+      TOPIC_SHIPMENT_EVENTS: "shipment-events"
+      TOPIC_SCAN_EVENTS_HUB: "scan-events.hub"
+      TOPIC_SCAN_EVENTS_LOCKER: "scan-events.locker"
 
 networks:
   default:
