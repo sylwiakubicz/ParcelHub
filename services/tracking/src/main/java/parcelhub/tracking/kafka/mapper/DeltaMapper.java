@@ -87,6 +87,31 @@ public class DeltaMapper {
                     LocationType.NONE, dest);
             return Optional.of(d);
         }
+
+        if (record instanceof ArrivedAtHub arrivedAtHub) {
+            String shipmentId = toStringOrNull(arrivedAtHub.getShipmentId());
+            if (shipmentId == null || shipmentId.isBlank()) {
+                return Optional.empty();
+            }
+            String dest = toStringOrNull(arrivedAtHub.getHubId());
+            long ts = arrivedAtHub.getTs().toEpochMilli();
+            TrackingDelta d = TrackingDelta.statusAndLocation(shipmentId, ShipmentStatus.AT_HUB, ts,
+                    LocationType.HUB, dest);
+            return Optional.of(d);
+        }
+
+        if (record instanceof CollectedFromLocker collectedFromLocker) {
+            String shipmentId = toStringOrNull(collectedFromLocker.getShipmentId());
+            if (shipmentId == null || shipmentId.isBlank()) {
+                return Optional.empty();
+            }
+            String dest = toStringOrNull(collectedFromLocker.getLockerId());
+            long ts = collectedFromLocker.getTs().toEpochMilli();
+            TrackingDelta d = TrackingDelta.statusAndLocation(shipmentId, ShipmentStatus.PICKED_UP, ts,
+                    LocationType.NONE, dest);
+            return Optional.of(d);
+        }
+
         return Optional.empty();
     }
 
