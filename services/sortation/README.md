@@ -36,3 +36,6 @@ tylko w osobnych modułach. Dla Kafki powstał moduł spring-boot-kafka, a start
 
 ### Błąd topologi
 ![img.png](img.png)
+
+### Po co topic config?
+![img_1.png](img_1.png)
