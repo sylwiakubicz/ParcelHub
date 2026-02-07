@@ -17,7 +17,7 @@ public class SortationTopology {
     }
 
     @Bean
-    public KStream<String, ArrivedAtHub> arrivedAtHub(StreamsBuilder builder) {
+    public KStream<String, ArrivedAtHub> arrivedAtHubStream(StreamsBuilder builder) {
         KStream<String, ArrivedAtHub> stream = builder.stream(topicsConfig.getScanEventsHub());
 
         stream.peek((k, v) -> System.out.println("Arrived at " + v.getHubId()));
