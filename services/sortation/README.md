@@ -35,7 +35,22 @@ W Spring Boot 4 Spring poszedł w mocną modularność: auto-konfiguracje nie si
 tylko w osobnych modułach. Dla Kafki powstał moduł spring-boot-kafka, a starter spring-boot-starter-kafka go dociąga.
 
 ### Błąd topologi
-![img.png](img.png)
+![img.png](images/img.png)
 
 ### Po co topic config?
-![img_1.png](img_1.png)
+![img_1.png](images/img_1.png)
+
+### Kafka consumer vs Kafka stream vs Kafka table
+![img.png](images/kafkaconsumer.png)
+![img_1.png](images/kafkastream.png)
+![img_2.png](images/kafkatable.png)
+![img.png](images/streamvstable.png)
+
+### Pojęcia
+![img.png](images/imperatywnie.png)
+![img_1.png](images/agregacja.png)
+![img_2.png](images/stream.png)
+![img_3.png](images/stan.png)
+
+### Stream vs plain consumer
+![img.png](images/streamvscosnumer.png)
