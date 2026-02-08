@@ -4,10 +4,10 @@ import com.parcelhub.shipment.ArrivedAtHub;
 import com.parcelhub.shipment.ShipmentCreated;
 import com.parcelhub.sortation.kafka.config.TopicsConfig;
 import com.parcelhub.sortation.kafka.dto.ShipmentRoute;
+import com.parcelhub.sortation.kafka.mapper.ShipmentRouteMapper;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
-import org.apache.kafka.streams.kstream.internals.KStreamImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,17 +31,14 @@ public class SortationTopology {
 
     @Bean
     public KTable<String, ShipmentRoute> shipmentCreatedKTable(StreamsBuilder builder) {
+        ShipmentRouteMapper shipmentRouteMapper = new ShipmentRouteMapper();
+
         KTable<String, ShipmentRoute> ktable = builder.stream(topicsConfig.getShipmentEvents())
                 .filter((k, v) -> v instanceof ShipmentCreated)
                 .mapValues(v -> (ShipmentCreated) v)
                 .filter((k, sc) -> sc.getShipmentId() != null && sc.getDestinationLockerId() != null)
                 .selectKey((k, sc) -> sc.getShipmentId())
-                .mapValues(sc -> {
-                    ShipmentRoute route = new ShipmentRoute();
-                    route.setShipmentId(sc.getShipmentId());
-                    route.setDestinationLockerId(sc.getDestinationLockerId());
-                    return route;
-                })
+                .mapValues(shipmentRouteMapper::from)
                 .toTable();
 
         return ktable;
