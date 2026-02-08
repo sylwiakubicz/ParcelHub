@@ -12,5 +12,9 @@ public class TopologyNames {
     public static final String MISSING_ROUTE_META = "missing-route-meta";
     public static final String READY_FOR_DECISION = "ready-for-decision";
 
+    public static final String DECISION_SPLIT_PREFIX = "decision-";
+    public static final String DECISION_TO_LOCKER_BRANCH = "to-locker";
+    public static final String DECISION_TO_NEXT_HUB_BRANCH = "to-next-hub";
+
     private TopologyNames() {}
 }

@@ -6,6 +6,7 @@ import com.parcelhub.sortation.kafka.config.TopicsConfig;
 import com.parcelhub.sortation.kafka.dto.ArrivedAtHubWithRoute;
 import com.parcelhub.sortation.kafka.dto.ShipmentRoute;
 import com.parcelhub.sortation.kafka.mapper.ShipmentRouteMapper;
+import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -16,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.support.serializer.JsonSerde;
+
+import java.util.Map;
 
 import static com.parcelhub.sortation.kafka.topology.TopologyNames.*;
 
@@ -101,5 +104,49 @@ public class SortationTopology {
         return readyForDecision;
     }
 
-    // TODO based on readyForDecision stream decide hub or locker and send message with proper schema to ShipmentEvents
+    @Bean
+    public KStream<String, SpecificRecord> decisionAndPublish(KStream<String, ArrivedAtHubWithRoute> readyForDecision) {
+        ShipmentRouteMapper shipmentRouteMapper = new ShipmentRouteMapper();
+
+        // separate to branches
+        Map<String, KStream<String, ArrivedAtHubWithRoute>> branches = readyForDecision
+                .split(Named.as(DECISION_SPLIT_PREFIX))
+                .branch((k, v) -> isInDestinationHub(v),
+                        Branched.as(DECISION_TO_LOCKER_BRANCH))
+                .defaultBranch(Branched.as(DECISION_TO_NEXT_HUB_BRANCH));
+
+        KStream<String, ArrivedAtHubWithRoute> toLocker =
+                branches.get(DECISION_SPLIT_PREFIX + DECISION_TO_LOCKER_BRANCH);
+
+        KStream<String, ArrivedAtHubWithRoute> toNextHub =
+                branches.get(DECISION_SPLIT_PREFIX + DECISION_TO_NEXT_HUB_BRANCH);
+
+        // Map to avro schemas
+        KStream<String, SpecificRecord> lockerEvents = toLocker
+                .mapValues(shipmentRouteMapper::sortedToLockerFrom);
+
+        KStream<String, SpecificRecord> hubEvents = toNextHub
+                .mapValues(shipmentRouteMapper::sortedTOnNextHubFrom);
+
+
+        // merge both streams and send them to ShipmentEvents
+        KStream<String, SpecificRecord> out = lockerEvents.merge(hubEvents);
+
+        out.to(topicsConfig.getShipmentEvents());
+
+        return out;
+    }
+
+    private boolean isInDestinationHub(ArrivedAtHubWithRoute v) {
+        String currentHub = v.arrivedAtHub().getHubId();
+        String destHub = destHubFromLocker(v.route().getDestinationLockerId());
+        return currentHub.equals(destHub);
+    }
+
+    private String destHubFromLocker(String destinationLockerId) {
+        if (destinationLockerId == null || destinationLockerId.length() < 3) {
+            throw new IllegalArgumentException("Invalid destinationLockerId: " + destinationLockerId);
+        }
+        return destinationLockerId.substring(0, 3).toUpperCase();
+    }
 }
