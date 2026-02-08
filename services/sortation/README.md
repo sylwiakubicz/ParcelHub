@@ -63,3 +63,14 @@ tylko w osobnych modułach. Dla Kafki powstał moduł spring-boot-kafka, a start
 ![img.png](images/immutablevsmutable.png)
 ![img_1.png](images/classandrecord.png)
 ![img_2.png](images/enum.png)
+
+### Joiny w kafka stream
+![img.png](images/kafkastreamjoins.png)
+
+### Flow seriwsu
+![img_1.png](images/servisflowpart2.png)
+<br>
+![img.png](images/servisflow.png)
+<br>
+### Zależności tworzenia beanów
+![img.png](images/beandiagram.png)
