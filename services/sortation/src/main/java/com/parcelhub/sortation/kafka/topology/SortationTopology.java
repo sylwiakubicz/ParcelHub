@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.support.serializer.JsonSerde;
 
 import static com.parcelhub.sortation.kafka.topology.TopologyNames.*;
 
@@ -43,10 +44,13 @@ public class SortationTopology {
     public KTable<String, ShipmentRoute> shipmentCreatedKTable(StreamsBuilder builder) {
         ShipmentRouteMapper shipmentRouteMapper = new ShipmentRouteMapper();
 
+        JsonSerde<ShipmentRoute> routeSerde = new JsonSerde<>(ShipmentRoute.class);
+
         Materialized<String, ShipmentRoute, KeyValueStore<Bytes, byte[]>> materialized =
                 Materialized.<String, ShipmentRoute, KeyValueStore<org.apache.kafka.common.utils.Bytes,
                                 byte[]>>as(SHIPMENT_ROUTE_STORE)
-                        .withKeySerde(Serdes.String());
+                        .withKeySerde(Serdes.String())
+                        .withValueSerde(routeSerde);
 
         KTable<String, ShipmentRoute> ktable = builder.stream(topicsConfig.getShipmentEvents())
                 .filter((k, v) -> v instanceof ShipmentCreated, Named.as(ROUTE_FROM_SHIPMENT_CREATED))
@@ -97,4 +101,5 @@ public class SortationTopology {
         return readyForDecision;
     }
 
+    // TODO based on readyForDecision stream decide hub or locker and send message with proper schema to ShipmentEvents
 }
