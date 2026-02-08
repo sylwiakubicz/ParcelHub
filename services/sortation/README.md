@@ -54,3 +54,12 @@ tylko w osobnych modułach. Dla Kafki powstał moduł spring-boot-kafka, a start
 
 ### Stream vs plain consumer
 ![img.png](images/streamvscosnumer.png)
+
+### Dlaczego record a nie zwykłe dto 
+![img.png](images/recordimmutable.png)
+
+
+### Definicje
+![img.png](images/immutablevsmutable.png)
+![img_1.png](images/classandrecord.png)
+![img_2.png](images/enum.png)
