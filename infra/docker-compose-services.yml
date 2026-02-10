@@ -130,3 +130,4 @@ secrets:
 
 volumes:
   tracking-state:
+  sortation-state:
