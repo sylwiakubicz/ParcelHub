@@ -112,6 +112,29 @@ public class DeltaMapper {
             return Optional.of(d);
         }
 
+        if (record instanceof SortedToNextHub sortedToNextHub) {
+            String shipmentId = toStringOrNull(sortedToNextHub.getShipmentId());
+            if (shipmentId == null || shipmentId.isBlank()) {
+                return Optional.empty();
+            }
+            long ts = sortedToNextHub.getTs().toEpochMilli();
+            TrackingDelta d = TrackingDelta.statusOnly(shipmentId, ShipmentStatus.IN_TRANSIT, ts);
+            return Optional.of(d);
+        }
+
+        if (record instanceof SortedToDestLocker sortedToDestLocker) {
+            String shipmentId = toStringOrNull(sortedToDestLocker.getShipmentId());
+            if (shipmentId == null || shipmentId.isBlank()) {
+                return Optional.empty();
+            }
+
+            long ts = sortedToDestLocker.getTs().toEpochMilli();
+
+            TrackingDelta d = TrackingDelta.statusOnly(shipmentId, ShipmentStatus.IN_TRANSIT, ts);
+            return Optional.of(d);
+        }
+
+
         return Optional.empty();
     }
 

@@ -19,7 +19,7 @@ services:
 
 
   tracking-service:
-    image: sylwiakubicz/tracking:0.3.0
+    image: sylwiakubicz/tracking:0.4.0
     ports:
      - "8085:8085"
     container_name: tracking-service
@@ -90,6 +90,33 @@ services:
       TOPIC_SCAN_EVENTS_HUB: "scan-events.hub"
       TOPIC_SCAN_EVENTS_LOCKER: "scan-events.locker"
 
+
+  sortation-service:
+    image: sylwiakubicz/sortation:0.1.0
+    ports:
+      - "8086:8086"
+    container_name: sortation-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    environment:
+      APICURIO_URL: "http://apicurio:8080/apis/registry/v2"
+      IQ_HOST: "sortation-service"
+      KAFKA_APPLICATION_ID: "parcelhub-sortation-service"
+      KAFKA_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
+      KAFKA_STATE_DIR: "/var/lib/kafka-streams/state"
+      SERVER_PORT: 8086
+      STORE_NAME: "sortation-state"
+      TOPIC_SCAN_EVENTS_HUB: "scan-events.hub"
+      TOPIC_SHIPMENT_EVENTS: "shipment-events"
+      KAFKA_INTERNAL_RF: 3
+      KAFKA_OFFSET_RESET: "latest"
+    volumes:
+      - sortation-state:/var/lib/kafka-streams/state
+
 networks:
   default:
     external: true
@@ -103,3 +130,4 @@ secrets:
 
 volumes:
   tracking-state:
+  sortation-state:
