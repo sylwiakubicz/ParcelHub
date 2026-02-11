@@ -1,0 +1,11 @@
+{
+  "type": "record",
+  "name": "shipmentData",
+  "namespace": "payload",
+  "fields": [
+    { "name": "shipmentId", "type": ["null", { "type": "string", "logicalType": "uuid" }], "default": null },
+    { "name": "lockerId", "type": ["null", "string"], "default": null },
+    { "name": "pickupCode", "type": ["null", "string"], "default": null }
+  ],
+  "connect.name": "payload.shipmentData"
+}

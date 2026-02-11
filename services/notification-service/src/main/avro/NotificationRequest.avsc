@@ -1,0 +1,14 @@
+{
+  "type": "record",
+  "name": "NotificationRequest",
+  "namespace": "com.parcelhub.notification",
+  "fields": [
+    { "name": "eventId",    "type": { "type": "string", "logicalType": "uuid" } },
+    { "name": "channel", "type": "string" },
+    { "name": "recipient",     "type": "string" },
+    { "name": "templateId",     "type": "string" },
+    { "name": "variables",    "type":["null","payload.shipmentData"],"default":null},
+    { "name": "businessKey",     "type": "string" },
+    { "name": "ts",         "type": { "type": "long", "logicalType": "timestamp-millis" } }
+  ]
+}

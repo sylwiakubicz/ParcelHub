@@ -1,0 +1,29 @@
+{
+  "type": "record",
+  "name": "NotificationRequestDlq",
+  "namespace": "com.parcelhub.notification",
+  "fields": [
+    { "name": "eventId", "type": { "type": "string", "logicalType": "uuid" } },
+
+    { "name": "businessKey", "type": ["null", "string"], "default": null },
+    { "name": "shipmentId", "type": ["null", { "type": "string", "logicalType": "uuid" }], "default": null },
+
+    { "name": "failedAt", "type": { "type": "long", "logicalType": "timestamp-millis" } },
+    { "name": "reason", "type": "string" },
+
+    { "name": "retryCount", "type": "int", "default": 0 },
+
+    { "name": "errorClass", "type": ["null", "string"], "default": null },
+    { "name": "errorMessage", "type": ["null", "string"], "default": null },
+
+    { "name": "originalTopic", "type": ["null", "string"], "default": null },
+    { "name": "originalPartition", "type": ["null", "int"], "default": null },
+    { "name": "originalOffset", "type": ["null", "long"], "default": null },
+
+    { "name": "originalHeaders", "type": ["null", { "type": "map", "values": "string" }], "default": null },
+
+    { "name": "notificationRequest", "type": ["null", "com.parcelhub.shipment.NotificationRequest"], "default": null },
+
+    { "name": "rawValue", "type": ["null", "bytes"], "default": null }
+  ]
+}
