@@ -28,8 +28,18 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<apicurio.registry.url>http://localhost:8081</apicurio.registry.url>
+		<apicurio.registry.plugin.version>2.5.10.Final</apicurio.registry.plugin.version>
+
+		<schemas.version>1</schemas.version>
+
+		<schemas.dir>${project.basedir}/src/main/avro</schemas.dir>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -41,6 +51,16 @@
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-streams</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.apicurio</groupId>
+			<artifactId>apicurio-registry-serdes-avro-serde</artifactId>
+			<version>${apicurio.registry.plugin.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.avro</groupId>
+			<artifactId>avro</artifactId>
+			<version>1.11.3</version>
 		</dependency>
 
 		<dependency>
@@ -65,6 +85,30 @@
 						<runImage>paketobuildpacks/ubuntu-noble-run:latest</runImage>
 					</image>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.avro</groupId>
+				<artifactId>avro-maven-plugin</artifactId>
+				<version>1.11.3</version>
+				<executions>
+
+					<execution>
+						<id>generate-shipment-avro</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>schema</goal>
+						</goals>
+						<configuration>
+							<sourceDirectory>${project.basedir}/src/main/avro</sourceDirectory>
+							<outputDirectory>${project.build.directory}/generated-sources/avro</outputDirectory>
+							<stringType>String</stringType>
+							<imports>
+								<import>${project.basedir}/src/main/avro/payload.sender.avsc</import>
+								<import>${project.basedir}/src/main/avro/payload.recipient.avsc</import>
+							</imports>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

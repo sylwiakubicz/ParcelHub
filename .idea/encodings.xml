@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/services/courier-app/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/courier-appd/courier-app/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/locker-gateway/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/services/notification-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/shipment-api/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/sortation/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/services/tracking/src/main/java" charset="UTF-8" />

@@ -10,6 +10,7 @@
         <option value="$PROJECT_DIR$/services/courier-app/courier-app/pom.xml" />
         <option value="$PROJECT_DIR$/services/courier-app/pom.xml" />
         <option value="$PROJECT_DIR$/services/sortation/pom.xml" />
+        <option value="$PROJECT_DIR$/services/notification-service/pom.xml" />
       </list>
     </option>
   </component>

@@ -6,20 +6,20 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="sortation" />
         <module name="locker-gateway" />
         <module name="courier-app" />
         <module name="tracking" />
         <module name="shipment-api" />
+        <module name="notification-service" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="sortation" target="21" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="courier-app" options="-parameters" />
       <module name="locker-gateway" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
       <module name="shipment-api" options="-parameters" />
       <module name="sortation" options="-parameters" />
       <module name="tracking" options="-parameters" />
