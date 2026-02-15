@@ -110,6 +110,7 @@
 							<imports>
 								<import>${project.basedir}/src/main/avro/payload.sender.avsc</import>
 								<import>${project.basedir}/src/main/avro/payload.recipient.avsc</import>
+								<import>${project.basedir}/src/main/avro/shipmentData.avsc</import>
 							</imports>
 						</configuration>
 					</execution>

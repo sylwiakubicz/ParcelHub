@@ -22,7 +22,7 @@
 
     { "name": "originalHeaders", "type": ["null", { "type": "map", "values": "string" }], "default": null },
 
-    { "name": "notificationRequest", "type": ["null", "com.parcelhub.shipment.NotificationRequest"], "default": null },
+    { "name": "notificationRequest", "type": ["null", "com.parcelhub.notification.NotificationRequest"], "default": null },
 
     { "name": "rawValue", "type": ["null", "bytes"], "default": null }
   ]
