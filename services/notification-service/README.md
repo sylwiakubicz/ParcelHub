@@ -5,3 +5,6 @@
 
 ### Lombok error adnotacji
 ![img.png](images/lombok.png)
+
+### DLQ
+![img.png](images/dlq.png)
