@@ -18,6 +18,7 @@ public class ShipmentNotificationMapper {
 
     public static NotificationRequest createNotificationRequest(
             ShipmentNotificationState shipmentNotificationState, ReadyForPickup readyForPickup) {
+        if (shipmentNotificationState == null || shipmentNotificationState.recipientPhone() == null) return null;
         NotificationRequest notificationRequest = new NotificationRequest();
         notificationRequest.setChannel("SMS");
         notificationRequest.setBusinessKey("READY_FOR_PICKUP:" + readyForPickup.getShipmentId());
