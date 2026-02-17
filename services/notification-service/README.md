@@ -8,3 +8,6 @@
 
 ### DLQ
 ![img.png](images/dlq.png)
+
+### Błąd branch'y
+![img.png](images/branch_error.png)

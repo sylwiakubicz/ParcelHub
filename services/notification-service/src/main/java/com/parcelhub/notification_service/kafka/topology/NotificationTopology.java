@@ -10,10 +10,7 @@ import org.apache.avro.specific.SpecificRecord;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.Branched;
-import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KTable;
-import org.apache.kafka.streams.kstream.Materialized;
+import org.apache.kafka.streams.kstream.*;
 import org.apache.kafka.streams.state.KeyValueStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,7 +34,7 @@ public class NotificationTopology {
     public Map<String, KStream<String, SpecificRecord>> topicStreams(StreamsBuilder builder) {
         KStream<String, SpecificRecord> events = builder.stream(topicConfig.getShipmentEvents());
 
-        Map<String, KStream<String, SpecificRecord>> branches = events.split()
+        Map<String, KStream<String, SpecificRecord>> branches = events.split(Named.as(PREFIX))
                 .branch((k, v) -> v instanceof ShipmentCreated, Branched.as(SHIPMENT_NOTIFICATION_BRANCH))
                 .branch((k, v) -> v instanceof ReadyForPickup, Branched.as(READY_FOR_PICKUP_BRANCH))
                 .noDefaultBranch();
@@ -48,7 +45,7 @@ public class NotificationTopology {
     @Bean
     public KTable<String, ShipmentNotificationState> shipmentStateTable(Map<String, KStream<String, SpecificRecord>> branches) {
         // TODO: 1) handle this exception
-        var createdBranch = branches.get(SHIPMENT_NOTIFICATION_BRANCH);
+        var createdBranch = branches.get(PREFIX + SHIPMENT_NOTIFICATION_BRANCH);
         if (createdBranch == null) {
             throw new IllegalStateException("Missing branches. Got: " + branches.keySet());
         }
@@ -62,7 +59,7 @@ public class NotificationTopology {
                         .withValueSerde(routeSerde);
 
 
-        KTable<String, ShipmentNotificationState> shipmentNotificationData = branches.get(SHIPMENT_NOTIFICATION_BRANCH)
+        KTable<String, ShipmentNotificationState> shipmentNotificationData = branches.get(PREFIX + SHIPMENT_NOTIFICATION_BRANCH)
                 .mapValues(v -> (ShipmentCreated) v)
                 .selectKey((k, sc) -> sc.getShipmentId())
                 .mapValues(ShipmentNotificationMapper::from)
@@ -74,12 +71,12 @@ public class NotificationTopology {
     @Bean
     public KStream<String, ReadyForPickup> shipmentNotifications(Map<String, KStream<String, SpecificRecord>> branches) {
         // TODO: 1) handle this exeption
-        var rfpBranch = branches.get(READY_FOR_PICKUP_BRANCH);
+        var rfpBranch = branches.get(PREFIX + READY_FOR_PICKUP_BRANCH);
         if (rfpBranch == null) {
             throw new IllegalStateException("Missing branches. Got: " + branches.keySet());
         }
 
-        KStream<String, ReadyForPickup> shipmentNotifications = branches.get(READY_FOR_PICKUP_BRANCH)
+        KStream<String, ReadyForPickup> shipmentNotifications = branches.get(PREFIX + READY_FOR_PICKUP_BRANCH)
                 .mapValues(v -> (ReadyForPickup) v)
                 .selectKey((k, rfp) -> rfp.getShipmentId().toString());
 
