@@ -14,3 +14,7 @@
 
 ### JPA a konstruktory w encjach
 ![img.png](images/constructor_jpa.png)
+
+### Save vs SaveAndFlush
+![img.png](images/save_vs_saveandflush.png)
+![img_1.png](images/when_saveandflsuh.png)
