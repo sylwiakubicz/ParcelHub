@@ -22,6 +22,14 @@ public class NotificationDedupe {
     @Column(nullable = false)
     private Instant processedAt;
 
+    public NotificationDedupe() {
+    }
+
+    public NotificationDedupe(String businessKey, UUID shipmentId) {
+        this.businessKey = businessKey;
+        this.shipmentId = shipmentId;
+    }
+
     @PrePersist
     void prePersist() {
         if (processedAt == null) processedAt = Instant.now();
