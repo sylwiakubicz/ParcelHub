@@ -11,3 +11,6 @@
 
 ### Błąd branch'y
 ![img.png](images/branch_error.png)
+
+### JPA a konstruktory w encjach
+![img.png](images/constructor_jpa.png)
