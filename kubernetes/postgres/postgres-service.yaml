@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db
+  namespace: parcelhub
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres-db
+  ports:
+    - name: postgres
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+#  for local development
+#  kubectl -n parcelhub port-forward svc/postgres-db 5432:5432
