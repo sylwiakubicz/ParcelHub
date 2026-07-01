@@ -81,7 +81,7 @@ spec:
               mountPath: /var/lib/postgresql/data
 
             - name: postgres-secret
-              mountPath: /run/secrets
+              mountPath: /etc/postgres-secret/db_password
               readOnly: true
 
             - name: init-scripts
