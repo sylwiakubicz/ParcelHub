@@ -63,6 +63,17 @@ spec:
             - name: ALLOW_PLAINTEXT_LISTENER
               value: "yes"
 
+          command:
+            - bash
+            - -ec
+            - |
+              ORDINAL="${HOSTNAME##*-}"
+              NODE_ID=$((ORDINAL + 1))
+              
+              export KAFKA_CFG_NODE_ID="${NODE_ID}"
+              export KAFKA_CFG_ADVERTISED_LISTENERS="INTERNAL://${HOSTNAME}.kafka-headless.parcelhub.svc.cluster.local:9092"
+              
+              exec /opt/bitnami/scripts/kafka/entrypoint.sh /opt/bitnami/scripts/kafka/run.sh
 
           volumeMounts:
             - name: data
