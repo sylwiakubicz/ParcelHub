@@ -31,7 +31,7 @@ spec:
               value: "y4s8C7w5QOiK3Nq2Yzv6g"
 
             - name: KAFKA_CFG_PROCESS_ROLES
-              value: "broker,controlle"
+              value: "broker,controller"
 
             - name: KAFKA_CFG_CONTROLLER_QUORUM_VOTERS
               value: "1@kafka-0.kafka-headless.parcelhub.svc.cluster.local:9093,2@kafka-1.kafka-headless.parcelhub.svc.cluster.local:9093,3@kafka-2.kafka-headless.parcelhub.svc.cluster.local:9093"
