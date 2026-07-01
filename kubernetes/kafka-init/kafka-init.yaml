@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: kakfa-init
+  name: kafka-init
   namespace: parcelhub
 spec:
   backoffLimit: 10
@@ -12,7 +12,7 @@ spec:
           image: bitnamilegacy/kafka:3.7.0
           env:
             - name: BOOTSTRAP
-              value: kafka-bootstrap
+              value: kafka-bootstrap:9092
           command:
             - bash
             - -lc
