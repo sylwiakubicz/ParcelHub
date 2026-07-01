@@ -6,7 +6,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: kafka-bootstrap
+    app: kafka
   ports:
     - name: kafka
       port: 9092
