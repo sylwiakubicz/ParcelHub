@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debezium
+  namespace: parcelhub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debezium
+  template:
+    metadata:
+      labels:
+        app: debezium
+    spec:
+      initContainers:
+        - name: wait-for-kafka
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z kafka-bootstrap 9092; do
+                echo "Waiting for Kafka..."
+                sleep 5
+              done
+              echo "Kafka is reachable."
+
+        - name: wait-for-apicurio
+          image: curlimages/curl:8.10.1
+          command:
+            - sh
+            - -c
+            - |
+              until curl -fsS http://apicurio:8080/apis/registry/v2 >/dev/null; do
+                echo "Waiting for Apicurio..."
+                sleep 5
+              done
+              echo "Apicurio is reachable."
+
+        - name: wait-for-postgres
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z postgres-db 5432; do
+                echo "Waiting for Postgres..."
+                sleep 5
+              done
+              echo "Postgres is reachable."
+
+      containers:
+        - name: debezium
+          image: sylwiakubicz/debezium_connect_v2.6_apicurio_v2.5.10:1.0.0
+          ports:
+            - name: http
+              containerPort: 8083
+
+          env:
+            - name: BOOTSTRAP_SERVERS
+              value: "kafka-bootstrap:9092"
+
+            - name: GROUP_ID
+              value: "connect-cluster-1"
+
+            - name: CONFIG_STORAGE_TOPIC
+              value: "connect-configs"
+
+            - name: OFFSET_STORAGE_TOPIC
+              value: "connect-offsets"
+
+            - name: STATUS_STORAGE_TOPIC
+              value: "connect-status"
+
+            - name: CONFIG_STORAGE_REPLICATION_FACTOR
+              value: "3"
+
+            - name: OFFSET_STORAGE_REPLICATION_FACTOR
+              value: "3"
+
+            - name: STATUS_STORAGE_REPLICATION_FACTOR
+              value: "3"
+
+            - name: CONNECT_KEY_CONVERTER
+              value: "org.apache.kafka.connect.storage.StringConverter"
+
+            - name: CONNECT_VALUE_CONVERTER
+              value: "io.apicurio.registry.utils.converter.AvroConverter"
+
+            - name: CONNECT_VALUE_CONVERTER_APICURIO_REGISTRY_URL
+              value: "http://apicurio:8080/apis/registry/v2"
+
+          readinessProbe:
+            httpGet:
+              path: /connectors
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 10
+
+          livenessProbe:
+            httpGet:
+              path: /connectors
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 5
