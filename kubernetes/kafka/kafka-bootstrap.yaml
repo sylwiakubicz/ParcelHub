@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-bootstrap
+  namespace: parcelhub
+spec:
+  type: ClusterIP
+  selector:
+    app: kafka-bootstrap
+  ports:
+    - name: kafka
+      port: 9092
+      targetPort: 9092
+
+  

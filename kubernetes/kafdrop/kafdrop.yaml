@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafdrop
+  namespace: parcelhub
+  labels:
+    app: kafdrop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafdrop
+  template:
+    metadata:
+      labels:
+        app: kafdrop
+    spec:
+      initContainers:
+        - name: wait-for-kafka
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z kafka-bootstrap 9092; do
+                echo "Waiting for Kafka..."
+                sleep 5
+              done
+              echo "Kafka is reachable."
+
+      containers:
+        - name: kafdrop
+          image: obsidiandynamics/kafdrop
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+          env:
+            - name: KAFKA_BROKERCONNECT
+              value: kafka-bootstrap:9092
+            - name: JVM_OPTS
+              value: "-Xms16M -Xmx512M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+            - name: SPRINGDOC_API_DOCS_ENABLED
+              value: "false"
+            - name: SPRINGDOC_SWAGGER_UI_ENABLED
+              value: "false"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9000
+            initialDelaySeconds: 60
+            periodSeconds: 30
+      
